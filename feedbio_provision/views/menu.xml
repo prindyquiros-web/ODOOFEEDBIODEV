@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+       <data>
+      <menuitem id="menu_feedbio_root" name="Provisión Soya" sequence="10"/>
+    <menuitem id="menu_feedbio_contrato"
+              name="Contratos"
+              parent="menu_feedbio_root"
+              action="action_x_contrato"
+              sequence="20"/>
+  </data>
+</odoo>
+

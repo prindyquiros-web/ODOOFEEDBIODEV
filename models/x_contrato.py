@@ -7,7 +7,7 @@ class ContratoProvision(models.Model):
     _order = 'fecha_inicio desc'
 
     name = fields.Char(string='Referencia', required=True, copy=False, readonly=True, default='Nuevo')
-    proveedor_id = fields.Many2one('x.proveedor.contrato', string='Proveedor', required=True)
+    proveedor_id = fields.Many2one('res.partner', string='Proveedor', required=True)
     codigo_proveedor = fields.Char(string='Código proveedor', store=True, readonly=False)
     
     campana_id = fields.Many2one('x.campana', string='Campaña', required=True)
@@ -29,10 +29,9 @@ class ContratoProvision(models.Model):
 
     @api.model
     def create(self, vals):
-        # Rellenar código proveedor y año campaña aunque no se usen como related
         if vals.get('proveedor_id'):
-            proveedor = self.env['x.proveedor.contrato'].browse(vals['proveedor_id'])
-            vals['codigo_proveedor'] = proveedor.codigo or 'Sin datos'
+            proveedor = self.env['res.partner'].browse(vals['proveedor_id'])
+            vals['codigo_proveedor'] = proveedor.ref or 'Sin datos'
         else:
             vals['codigo_proveedor'] = 'Sin datos'
 
@@ -42,7 +41,6 @@ class ContratoProvision(models.Model):
         else:
             vals['anio_campana'] = 'Sin datos'
 
-        # Generar referencia
         if vals.get('name') == 'Nuevo':
             codigo_proveedor = vals.get('codigo_proveedor', 'XX')
             anio = vals.get('anio_campana', '0000')
@@ -61,6 +59,6 @@ class ContratoProvision(models.Model):
     @api.onchange('proveedor_id')
     def _onchange_proveedor(self):
         if self.proveedor_id:
-            self.codigo_proveedor = self.proveedor_id.codigo or 'Sin datos'
+            self.codigo_proveedor = self.proveedor_id.ref or 'Sin datos'
         else:
             self.codigo_proveedor = 'Sin datos'

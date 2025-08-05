@@ -28,9 +28,11 @@
           <sheet>
             <group>
               <field name="name" readonly="1"/>
-              <field name="campana_id"/>
-             <field name="anio_campana" readonly="1"/> 
- <field name="codigo_proveedor" readonly="1"/> 
+          
+         <field name="campana_id" domain="[]"/>
+<field name="codigo_proveedor" readonly="1"/>
+
+
 
               <field name="proveedor_id"/>
           

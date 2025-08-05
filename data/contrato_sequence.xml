@@ -1,0 +1,9 @@
+<odoo>
+  <record id="seq_x_contrato" model="ir.sequence">
+    <field name="name">Secuencia Contrato</field>
+    <field name="code">x.contrato.seq</field>
+    <field name="prefix"></field>
+    <field name="padding">4</field>
+    <field name="number_next">1</field>
+  </record>
+</odoo>

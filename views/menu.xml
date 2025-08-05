@@ -1,0 +1,9 @@
+<odoo>
+    <data>
+        <!-- Menú raíz que abre directamente la vista de contratos -->
+        <menuitem id="menu_provision_soya_root"
+                  name="Provisión Soya"
+                  sequence="10"
+                  action="action_x_contrato"/>
+    </data>
+</odoo>

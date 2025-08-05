@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_x_contrato,x_contrato,model_x_contrato,base.group_user,1,1,1,1
+access_x_contrato_user,x.contrato user,model_x_contrato,base.group_user,1,1,1,1
+access_x_campana_user,x.campana user,model_x_campana,base.group_user,1,1,1,1
+access_x_proveedor_user,x.proveedor.contrato user,model_x_proveedor_contrato,base.group_user,1,1,1,1
+
+

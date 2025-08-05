@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
   <data>
+
     <!-- Vista tipo árbol -->
-    <record id="view_x_contrato_tree" model="ir.ui.view">
-      <field name="name">x.contrato.tree</field>
+    <record id="view_x_contrato_tree_v3" model="ir.ui.view">
+      <field name="name">x.contrato.tree.v3</field>
       <field name="model">x.contrato</field>
       <field name="arch" type="xml">
         <tree>
           <field name="name"/>
+          <field name="campana_id"/>
+          <field name="anio_campana"/>
           <field name="proveedor_id"/>
+          <field name="codigo_proveedor"/>
           <field name="fecha_inicio"/>
           <field name="producto"/>
         </tree>
@@ -16,18 +20,25 @@
     </record>
 
     <!-- Vista tipo formulario -->
-    <record id="view_x_contrato_form" model="ir.ui.view">
-      <field name="name">x.contrato.form</field>
+    <record id="view_x_contrato_form_v3" model="ir.ui.view">
+      <field name="name">x.contrato.form.v3</field>
       <field name="model">x.contrato</field>
       <field name="arch" type="xml">
         <form>
           <sheet>
             <group>
-              <field name="name"/>
+              <field name="name" readonly="1"/>
+              <field name="campana_id"/>
+             <field name="anio_campana" readonly="1"/> 
+ <field name="codigo_proveedor" readonly="1"/> 
+
               <field name="proveedor_id"/>
+          
               <field name="fecha_inicio"/>
               <field name="fecha_fin"/>
               <field name="producto"/>
+              <field name="cantidad_total"/>
+              <field name="precio"/>
               <field name="observaciones"/>
             </group>
           </sheet>
@@ -35,13 +46,13 @@
       </field>
     </record>
 
-    <!-- Acción para mostrar la vista -->
+    <!-- Acción -->
     <record id="action_x_contrato" model="ir.actions.act_window">
       <field name="name">Contratos</field>
       <field name="res_model">x.contrato</field>
       <field name="view_mode">tree,form</field>
+      <field name="view_id" ref="view_x_contrato_form_v3"/>
     </record>
+
   </data>
 </odoo>
-
-  

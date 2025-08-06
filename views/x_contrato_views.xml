@@ -28,14 +28,16 @@
           <sheet>
             <group>
               <field name="name" readonly="1"/>
-          
-         <field name="campana_id" domain="[]"/>
-<field name="codigo_proveedor" readonly="1"/>
+              
+              <!-- 🔹 Campo company_id antes de proveedor_id -->
+              <field name="company_id"/>
+
+              <field name="campana_id" domain="[]"/>
+              <field name="codigo_proveedor" readonly="0"/>
+          <field name="proveedor_id" context="{'active_test': False}"/>
 
 
 
-              <field name="proveedor_id"/>
-          
               <field name="fecha_inicio"/>
               <field name="fecha_fin"/>
               <field name="producto"/>

@@ -6,10 +6,34 @@ class ContratoProvision(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'fecha_inicio desc'
 
-    name = fields.Char(string='Referencia', required=True, copy=False, readonly=True, default='Nuevo')
-    proveedor_id = fields.Many2one('res.partner', string='Proveedor', required=True)
-    codigo_proveedor = fields.Char(string='Código proveedor', store=True, readonly=False)
-    
+    company_id = fields.Many2one(
+        'res.company',
+        string='Compañía',
+        required=True,
+        default=lambda self: self.env.company
+    )
+
+    name = fields.Char(
+        string='Referencia',
+        required=True,
+        copy=False,
+        readonly=True,
+        default='Nuevo'
+    )
+
+    proveedor_id = fields.Many2one(
+        'res.partner',
+        string='Proveedor',
+        required=True
+    )
+
+    codigo_proveedor = fields.Char(
+        string='Código proveedor',
+        compute='_compute_codigo_proveedor',
+        store=True,
+        readonly=True
+    )
+
     campana_id = fields.Many2one('x.campana', string='Campaña', required=True)
     anio_campana = fields.Char(string='Año campaña', store=True, readonly=False)
 
@@ -56,9 +80,29 @@ class ContratoProvision(models.Model):
         else:
             self.anio_campana = 'Sin datos'
 
+    @api.depends('proveedor_id')
+    def _compute_codigo_proveedor(self):
+        for record in self:
+            record.codigo_proveedor = record.proveedor_id.ref or 'Sin datos'
+
     @api.onchange('proveedor_id')
-    def _onchange_proveedor(self):
+    def _onchange_proveedor_id(self):
         if self.proveedor_id:
             self.codigo_proveedor = self.proveedor_id.ref or 'Sin datos'
         else:
             self.codigo_proveedor = 'Sin datos'
+
+    @api.onchange('company_id')
+    def _onchange_company_id(self):
+        domain = [('supplier_rank', '>', 0)]
+        if self.company_id:
+            domain = [
+                ('supplier_rank', '>', 0),
+                '|',
+                ('company_id', '=', False),
+                ('company_id', '=', self.company_id.id)
+            ]
+        return {'domain': {'proveedor_id': domain}}
+
+
+

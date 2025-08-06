@@ -1,9 +1,59 @@
 <odoo>
-    <data>
-        <!-- Menú raíz que abre directamente la vista de contratos -->
+    <data noupdate="0">
+
+        <!-- Menú raíz FeedBio con logo -->
+        <menuitem id="menu_feedbio_root"
+                  name=""
+                  sequence="1"
+                  web_icon="ODOOFEEDBIODEV,static/description/feedbio_logo.jpg"/>
+
+        <!-- Submenú para la empresa Giudico Bio Togo -->
+        <menuitem id="menu_giudico_bio_togo"
+                  name="Giudico Bio Togo Sarl"
+                  parent="menu_feedbio_root"
+                  sequence="1"/>
+
+        <!-- Menú contenedor Provisión de Soya (SIN acción) -->
         <menuitem id="menu_provision_soya_root"
                   name="Provisión Soya"
-                  sequence="10"
+                  parent="menu_giudico_bio_togo"
+                  sequence="1"/>
+
+        <!-- ========= CREAR CONTRATOS ========= -->
+        <record id="action_x_contrato" model="ir.actions.act_window">
+            <field name="name">Crear contratos</field>
+            <field name="res_model">x.contrato</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem id="menu_crear_contratos"
+                  name="Crear contratos"
+                  parent="menu_provision_soya_root"
+                  sequence="1"
                   action="action_x_contrato"/>
+
+        <!-- ========= CAMPAÑAS ========= -->
+        <record id="action_x_campana" model="ir.actions.act_window">
+            <field name="name">Campañas</field>
+            <field name="res_model">x.campana</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem id="menu_campanas"
+                  name="Campañas"
+                  parent="menu_provision_soya_root"
+                  sequence="2"
+                  action="action_x_campana"/>
+
+        <!-- ========= PROVEEDORES ========= -->
+        <record id="action_x_proveedor_contrato" model="ir.actions.act_window">
+            <field name="name">Proveedores</field>
+            <field name="res_model">x.proveedor.contrato</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem id="menu_proveedores"
+                  name="Proveedores"
+                  parent="menu_provision_soya_root"
+                  sequence="3"
+                  action="action_x_proveedor_contrato"/>
+
     </data>
 </odoo>

@@ -1,5 +1,5 @@
 {
-    'name': 'feedbio_provision_custom',
+    'name': 'ODOOFEEDBIODEV',
     'version': '1.0',
     'summary': 'Gestión de provisión y recepción de soya',
     'category': 'Operations',

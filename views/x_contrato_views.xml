@@ -28,16 +28,12 @@
           <sheet>
             <group>
               <field name="name" readonly="1"/>
-              
-              <!-- 🔹 Campo company_id antes de proveedor_id -->
-              <field name="company_id"/>
+              <field name="campana_id"/>
+             <field name="anio_campana" readonly="1"/> 
+ <field name="codigo_proveedor" readonly="1"/> 
 
-              <field name="campana_id" domain="[]"/>
-              <field name="codigo_proveedor" readonly="0"/>
-          <field name="proveedor_id" context="{'active_test': False}"/>
-
-
-
+              <field name="proveedor_id"/>
+          
               <field name="fecha_inicio"/>
               <field name="fecha_fin"/>
               <field name="producto"/>
@@ -50,13 +46,18 @@
       </field>
     </record>
 
-    <!-- Acción -->
+    <!-- Acción que abre lista + formulario -->
     <record id="action_x_contrato" model="ir.actions.act_window">
-      <field name="name">Contratos</field>
+      <field name="name">Crear contratos</field>
       <field name="res_model">x.contrato</field>
       <field name="view_mode">tree,form</field>
-      <field name="view_id" ref="view_x_contrato_form_v3"/>
     </record>
 
+    <!-- Menú para Crear contratos -->
+    <menuitem id="menu_crear_contratos"
+              name="Crear contratos"
+              parent="menu_provision_soya_root"
+              action="action_x_contrato"
+              sequence="1"/>
   </data>
 </odoo>

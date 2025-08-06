@@ -28,12 +28,10 @@
           <sheet>
             <group>
               <field name="name" readonly="1"/>
+              <field name="company_id"/>
               <field name="campana_id"/>
-             <field name="anio_campana" readonly="1"/> 
- <field name="codigo_proveedor" readonly="1"/> 
-
-              <field name="proveedor_id"/>
-          
+              <field name="codigo_proveedor" readonly="1"/>
+              <field name="proveedor_id" context="{'active_test': False}"/>
               <field name="fecha_inicio"/>
               <field name="fecha_fin"/>
               <field name="producto"/>
@@ -61,3 +59,4 @@
               sequence="1"/>
   </data>
 </odoo>
+

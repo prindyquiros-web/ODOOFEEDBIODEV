@@ -1,0 +1,265 @@
+<odoo>
+  <template id="giudico_lista_lotes_template" name="Lista de Lotes">
+    <t t-call="web.layout">
+      <t t-call-assets="web.assets_frontend" t-js="true"/>
+<t t-call="feedbio_provision_custom.giudico_lang_buttons"/>
+      <style>
+      html, body {
+  height: 100%;
+  margin: 0;
+  overflow-y: auto;   /* ✅ scroll global */
+}
+
+.g-main-wrap {
+  position: relative;
+  min-height: 100vh;
+  display: block;     /* ❌ ya no flex centrado */
+  padding: 20px 0;
+  overflow: visible;  /* ✅ permite crecer */
+}
+
+/* === Fondo fijo === */
+.g-bg,
+.g-overlay,
+.g-frame {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.g-bg {
+  background-image: url('/feedbio_provision_custom/static/src/img/backgroundweb.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transform: scale(1.02);
+  filter: saturate(1.05);
+}
+.g-overlay {
+  background: radial-gradient(ellipse at center, rgba(0,0,0,.15), rgba(0,0,0,.35));
+}
+.g-frame {
+  inset: 12px;
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+}
+
+/* === Contenido centrado === */
+.g-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1200px;
+  padding: 28px 20px 48px;
+  margin: 0 auto;   /* ✅ centra horizontalmente */
+}
+
+
+        /* === Caja principal === */
+        .lotes-container {
+          background: rgba(255,255,255,0.95);
+          border-radius: 14px;
+          padding: 25px 35px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .lotes-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+        .lotes-header h2 { color: #16a34a; margin: 0; }
+
+        /* Botones */
+        .giudico-btn {
+          background-color: #16a34a; color: white;
+          padding: 10px 18px; border-radius: 12px; font-weight: bold;
+          text-decoration: none; border: none; cursor: pointer;
+          box-shadow: 0 6px 14px rgba(0,0,0,.15); transition: all .2s ease;
+        }
+        .giudico-btn:hover { background-color: #15803d; transform: translateY(-2px); }
+
+        .giudico-btn1 {
+          background-color: #6b7280; color: white;
+          padding: 10px 18px; border-radius: 12px; font-weight: bold;
+          text-decoration: none; border: none; cursor: pointer;
+          box-shadow: 0 4px 10px rgba(0,0,0,.15); transition: all .2s ease;
+        }
+        .giudico-btn1:hover { background-color: #4b5563; transform: translateY(-2px); }
+
+        /* Tarjetas */
+        .lote-card {
+          background: white;
+          border-radius: 12px;
+          padding: 18px 22px;
+          margin-bottom: 20px;
+          box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+          transition: transform 0.2s ease-in-out;
+        }
+        .lote-card:hover { transform: translateY(-2px); }
+        .lote-card h4 { color: #16a34a; margin-top: 0; }
+
+        /* Acciones */
+        .acciones { margin-top: 12px; }
+        .btn-action {
+          display: inline-block; margin-right: 5px; padding: 6px 10px;
+          font-size: 0.85rem; font-weight: bold; border-radius: 6px;
+          text-decoration: none; color: white;
+        }
+        .btn-activar { background-color: #16a34a; }
+        .btn-activar:hover { background-color: #15803d; }
+        .btn-deshabilitar { background-color: #6c757d; }
+        .btn-deshabilitar:hover { background-color: #5a6268; }
+        .btn-cerrar { background-color: #dc3545; }
+        .btn-cerrar:hover { background-color: #c82333; }
+
+        /* Documentos */
+        .docs { margin-top: 10px; padding-top: 10px; border-top: 1px solid #ccc; }
+        .doc-btn {
+          background-color: #007bff; color: white;
+          padding: 6px 12px; border-radius: 6px;
+          font-size: 0.85rem; margin-right: 5px;
+          text-decoration: none; display: inline-block;
+        }
+        .doc-btn:hover { background-color: #0069d9; }
+        .doc-link::before { content: "📎 "; font-size: 0.9rem; margin-right: 2px; }
+
+        /* Botones editar/eliminar */
+        .edit-btn, .delete-btn {
+          padding: 6px 12px; border-radius: 6px; font-size: 0.85rem;
+          text-decoration: none; font-weight: bold; margin-right: 5px;
+          display: inline-block;
+        }
+        .edit-btn { background-color: #007bff; color: white; }
+        .edit-btn:hover { background-color: #0069d9; }
+        .delete-btn { background-color: #dc3545; color: white; }
+        .delete-btn:hover { background-color: #c82333; }
+               .giudico-btn-secondary2 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background:#374151;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:700;
+  border:1px solid rgba(255,255,255,.14);
+  transition:.2s;
+}
+.giudico-btn-secondary2:hover { background:#1f2937; }
+        </style>
+
+      <div class="g-main-wrap">
+        <div class="g-bg"></div>
+        <div class="g-overlay"></div>
+        <div class="g-frame"></div>
+
+        <div class="g-content">
+          <div class="lotes-container">
+            <div class="lotes-header">
+              <h2 t-translation="on">Lista de Lotes</h2>
+              <div style="display:flex; gap:10px;">
+                <a href="/giudico/lotes/nuevo" class="giudico-btn" t-translation="on">Nuevo Lote</a>
+                <a href="/giudico/menu" class="giudico-btn1" t-translation="on">Volver</a>
+              </div>
+            </div>
+
+            <t t-if="lotes">
+              <t t-foreach="lotes" t-as="l">
+                <div class="lote-card">
+                  <h4><t t-out="l.name"/></h4>
+                  <p><strong t-translation="on">Campaña:</strong> <t t-out="l.campana_id.name"/></p>
+                  <p><strong t-translation="on">Proveedores:</strong><br/>
+                    <t t-foreach="l.proveedor_ids" t-as="p">
+                      <t t-out="p.name"/><br/>
+                    </t>
+                  </p>
+                  <p><strong t-translation="on">Capacidad Total:</strong> <t t-out="l.capacidad_mt"/> MT</p>
+                  <p><strong t-translation="on">MT Acumulados:</strong> <t t-out="l.mt_actual"/> MT</p>
+                  <p><strong t-translation="on">Almacén:</strong> <t t-out="l.almacen_id.name or '-'"/></p>
+                  <p><strong t-translation="on">Estado:</strong> <t t-out="l.estado"/></p>
+                  <p><strong t-translation="on">Observaciones:</strong> <t t-out="l.observaciones"/></p>
+
+                  <!-- Acciones básicas -->
+                  <div style="margin-top:10px;">
+                    <a t-att-href="'/giudico/lotes/editar/%d' % l.id" class="edit-btn" t-translation="on">Editar</a>
+                    <a t-att-href="'/giudico/lotes/eliminar/%d' % l.id"
+                       class="delete-btn"
+                       onclick="return confirm('¿Seguro que quieres eliminar este lote?');"
+                       t-translation="on">Eliminar</a>
+                  </div>
+
+                  <!-- Acciones de estado -->
+                  <div class="acciones">
+                    <a t-att-href="'/giudico/lotes/activar?id=%d' % l.id" class="btn-action btn-activar" t-translation="on">Activar</a>
+                    <a t-att-href="'/giudico/lotes/deshabilitar?id=%d' % l.id" class="btn-action btn-deshabilitar" t-translation="on">Deshabilitar</a>
+                    <a t-att-href="'/giudico/lotes/cerrar?id=%d' % l.id" class="btn-action btn-cerrar" t-translation="on">Cerrar</a>
+                  </div>
+
+                  <!-- Documentos -->
+                  <div class="docs">
+                    <!-- Certification -->
+                    <form t-att-action="'/giudico/lotes/upload/%d/certification' % l.id"
+                          method="post" enctype="multipart/form-data" style="display:inline;">
+                      <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                      <input type="file" name="file" style="display:none;" onchange="this.form.submit()"/>
+                      <button type="button" class="doc-btn" onclick="this.previousElementSibling.click()" t-translation="on">Certification</button>
+                    </form>
+                    <t t-if="l.certification_filename">
+                      <a t-att-href="'/giudico/lotes/doc/certification?id=%d' % l.id" class="doc-link" target="_blank"><t t-out="l.certification_filename"/></a>
+                      <a t-att-href="'/giudico/lotes/delete_file/%d/certification' % l.id" class="delete-btn" onclick="return confirm('¿Eliminar archivo?');">✕</a>
+                    </t>
+
+                    <!-- Delivery Note -->
+                    <form t-att-action="'/giudico/lotes/upload/%d/delivery_note' % l.id"
+                          method="post" enctype="multipart/form-data" style="display:inline;">
+                      <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                      <input type="file" name="file" style="display:none;" onchange="this.form.submit()"/>
+                      <button type="button" class="doc-btn" onclick="this.previousElementSibling.click()" t-translation="on">Delivery Note</button>
+                    </form>
+                    <t t-if="l.delivery_note_filename">
+                      <a t-att-href="'/giudico/lotes/doc/delivery_note?id=%d' % l.id" class="doc-link" target="_blank"><t t-out="l.delivery_note_filename"/></a>
+                      <a t-att-href="'/giudico/lotes/delete_file/%d/delivery_note' % l.id" class="delete-btn" onclick="return confirm('¿Eliminar archivo?');">✕</a>
+                    </t>
+
+                    <!-- Packing List -->
+                    <form t-att-action="'/giudico/lotes/upload/%d/packing_list' % l.id"
+                          method="post" enctype="multipart/form-data" style="display:inline;">
+                      <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                      <input type="file" name="file" style="display:none;" onchange="this.form.submit()"/>
+                      <button type="button" class="doc-btn" onclick="this.previousElementSibling.click()" t-translation="on">Packing List</button>
+                    </form>
+                    <t t-if="l.packing_list_filename">
+                      <a t-att-href="'/giudico/lotes/doc/packing_list?id=%d' % l.id" class="doc-link" target="_blank"><t t-out="l.packing_list_filename"/></a>
+                      <a t-att-href="'/giudico/lotes/delete_file/%d/packing_list' % l.id" class="delete-btn" onclick="return confirm('¿Eliminar archivo?');">✕</a>
+                    </t>
+
+                    <!-- Invoice -->
+                    <form t-att-action="'/giudico/lotes/upload/%d/invoice' % l.id"
+                          method="post" enctype="multipart/form-data" style="display:inline;">
+                      <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                      <input type="file" name="file" style="display:none;" onchange="this.form.submit()"/>
+                      <button type="button" class="doc-btn" onclick="this.previousElementSibling.click()" t-translation="on">Invoice</button>
+                    </form>
+                    <t t-if="l.invoice_filename">
+                      <a t-att-href="'/giudico/lotes/doc/invoice?id=%d' % l.id" class="doc-link" target="_blank"><t t-out="l.invoice_filename"/></a>
+                      <a t-att-href="'/giudico/lotes/delete_file/%d/invoice' % l.id" class="delete-btn" onclick="return confirm('¿Eliminar archivo?');">✕</a>
+                    </t>
+                  </div>
+                </div>
+              </t>
+            </t>
+            <t t-if="not lotes">
+              <p t-translation="on">No hay lotes registrados.</p>
+            </t>
+          </div>
+        </div>
+      </div>
+    </t>
+  </template>
+</odoo>

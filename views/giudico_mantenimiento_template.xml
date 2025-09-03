@@ -1,0 +1,138 @@
+<odoo>
+    <template id="giudico_mantenimiento_template" name="Pantalla de Mantenimiento">
+        <t t-call="web.layout">
+        <t t-call="feedbio_provision_custom.giudico_lang_buttons"/>
+            <style>
+              /* Reutilizamos estilos globales de Giudico */
+              .g-main-wrap{
+                position: relative;
+                min-height: 100vh;
+                display: flex; 
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                overflow: hidden;
+              }
+              .g-bg{
+                position: absolute; inset: 0;
+                background-image: url('/feedbio_provision_custom/static/src/img/backgroundweb.png');
+                background-size: cover; background-position: center; background-repeat: no-repeat;
+                transform: scale(1.02);
+                filter: saturate(1.05);
+              }
+              .g-overlay{
+                position:absolute; inset:0;
+                background: radial-gradient(ellipse at center, rgba(0,0,0,.15), rgba(0,0,0,.35));
+              }
+              .g-content{
+                position: relative;
+                z-index: 2;
+                width: 100%;
+                max-width: 1100px;
+                padding: 28px 20px 48px;
+                text-align: center;
+              }
+              .g-logo{
+                height: clamp(100px, 20vw, 200px);
+                object-fit: contain;
+                margin: 0 auto 12px;
+                display:block;
+                filter: drop-shadow(0 2px 6px rgba(0,0,0,.25));
+              }
+              .g-title{
+                font-size: clamp(20px, 2.4vw, 28px);
+                letter-spacing: .5px;
+                color: #fff;
+                font-weight: 600;
+                text-shadow: 0 2px 6px rgba(3, 42, 9, 0.45);
+                margin: 0 0 22px;
+              }
+              .g-grid{
+                display: grid;
+                grid-template-columns: repeat(2, minmax(220px,1fr));
+                gap: 16px;
+                justify-content: center;
+              }
+              @media (max-width: 780px){  .g-grid{ grid-template-columns: repeat(1, minmax(200px,1fr)); } }
+              .giudico-btn{
+                display: inline-flex; align-items: center; justify-content: center;
+                gap: 10px;
+                background: #16a34a;
+                color: #ffffff;
+                padding: 14px 18px;
+                border-radius: 12px;
+                min-height: 56px;
+                text-decoration: none;
+                font-weight: 700;
+                letter-spacing: .3px;
+                box-shadow: 0 8px 18px rgba(0,0,0,.18), inset 0 -2px 0 rgba(0,0,0,.05);
+                border: 1px solid rgba(255,255,255,.14);
+                transition: transform .18s ease, box-shadow .18s ease, background .18s ease, filter .18s ease;
+                backdrop-filter: blur(1.5px);
+              }
+              .giudico-btn:hover{
+                transform: translateY(-2px);
+                background: #15803d;
+                box-shadow: 0 12px 22px rgba(0,0,0,.22);
+                filter: saturate(1.08);
+              }
+              .g-emoji{ font-size: 18px; line-height: 1; }
+              .g-frame{
+                position: absolute; inset: 12px;
+                border-radius: 16px;
+                box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+                pointer-events: none;
+              }
+                    .giudico-btn-secondary2 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background:#374151;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:700;
+  border:1px solid rgba(255,255,255,.14);
+  transition:.2s;
+}
+.giudico-btn-secondary2:hover { background:#1f2937; }
+        </style>
+
+
+            <div class="g-main-wrap">
+                <div class="g-bg"></div>
+                <div class="g-overlay"></div>
+                <div class="g-frame"></div>
+
+                <div class="g-content">
+                    <img src="/feedbio_provision_custom/static/src/img/LogoGiudico.png"
+                         alt="Giudico" class="g-logo"/>
+
+                    <h2 class="g-title" t-translation="on">🛠️ MANTENIMIENTO</h2>
+
+                    <div class="g-grid">
+                      <a href="/giudico/mantenimiento/campana" class="giudico-btn" t-translation="on">
+                        📅 CREAR CAMPAÑA
+                      </a>
+                      <a href="/giudico/mantenimiento/proveedor/new" class="giudico-btn" t-translation="on">
+                        🏭 CREAR PROVEEDOR
+                      </a>
+                      <a href="/giudico/mantenimiento/campanas" class="giudico-btn" t-translation="on">
+                        📋 Lista Campañas
+                      </a>
+                      <a href="/giudico/mantenimiento/proveedores" class="giudico-btn" t-translation="on">
+                        📋 Lista Proveedores
+                      </a>
+
+                      <a href="/giudico/almacenes" class="giudico-btn" t-translation="on">
+  <span class="g-emoji">🏭</span> ALMACENES
+</a>
+
+                    </div>
+                </div>
+                 <a href="/giudico/menu" class="giudico-btn" t-translation="on">Volver</a>
+            </div>
+        </t>
+    </template>
+</odoo>

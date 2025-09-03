@@ -1,0 +1,283 @@
+<odoo>
+  <data>
+
+    <!-- 📑 Lista de Adendas -->
+<template id="giudico_adendas_template" name="Lista de Adendas">
+  <t t-call="web.layout">
+    <t t-call-assets="web.assets_frontend" t-js="true"/>
+<t t-call="feedbio_provision_custom.giudico_lang_buttons"/>
+
+    <style>
+   html, body {
+  height: 100%;
+  margin: 0;
+  overflow-y: auto;   /* ✅ scroll vertical global */
+}
+
+.g-main-wrap {
+  position: relative;
+  min-height: 100vh;
+  display: block;     /* ya no flex centrado */
+  padding: 20px 0;
+  overflow: visible;  /* deja crecer el contenido */
+}
+
+/* Fondo fijo */
+.g-bg,
+.g-overlay,
+.g-frame {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.g-bg {
+  background-image: url('/feedbio_provision_custom/static/src/img/backgroundweb.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transform: scale(1.02);
+  filter: saturate(1.05);
+}
+.g-overlay { background: radial-gradient(ellipse at center, rgba(0,0,0,.15), rgba(0,0,0,.35)); }
+.g-frame { inset: 12px; border-radius: 16px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
+
+/* Contenido */
+.g-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1200px;
+  padding: 28px 20px 48px;
+  margin: 0 auto;   /* ✅ centra horizontalmente */
+}
+
+
+      /* Caja principal */
+      .adenda-container {
+        background: rgba(255,255,255,0.92);
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,.15);
+        min-height: 100vh;
+      }
+
+      /* Toolbar */
+      .adenda-toolbar {
+        position: sticky; top: 0; z-index: 10;
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        background: rgba(244,246,249,.9);
+        padding: 10px 12px; margin-bottom: 16px;
+        border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,.06);
+        backdrop-filter: blur(2px);
+      }
+      .adenda-title { margin: 0; font-size: 20px; font-weight: 800; color: #16a34a; }
+
+      /* Botones */
+      .giudico-btn {
+        background-color: #16a34a; color: white; padding: 10px 18px;
+        border-radius: 12px; font-weight: bold; text-decoration: none;
+        box-shadow: 0 6px 14px rgba(0,0,0,.15); transition: all .2s ease;
+      }
+      .giudico-btn:hover { background-color: #15803d; transform: translateY(-2px); }
+
+      .giudico-btn-secondary {
+        background: #374151; color: #fff; padding: 10px 18px;
+        border-radius: 12px; text-decoration: none; font-weight: 700;
+        box-shadow: 0 4px 10px rgba(0,0,0,.15); transition: all .2s ease;
+      }
+      .giudico-btn-secondary:hover { background: #1f2937; transform: translateY(-2px); }
+
+      /* Grid */
+      .adendas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+      .adenda-card {
+        background: white; border-radius: 12px; box-shadow: 0 6px 16px rgba(0,0,0,.10);
+        transition: transform .2s; overflow: hidden;
+      }
+      .adenda-card:hover { transform: translateY(-3px); }
+
+      /* Estado */
+      .estado-banner { padding: 6px; text-align: center; font-weight: bold; color: white; font-size: 14px; }
+      .estado-borrador { background-color: #6c757d; }
+      .estado-confirmada { background-color: #16a34a; }
+
+      /* Contenido */
+      .adenda-content { padding: 20px; }
+      .adenda-content h4 { font-size: 18px; margin-bottom: 10px; color: #16a34a; }
+      .adenda-content p { margin: 3px 0; font-size: 14px; color: #374151; }
+
+      /* Acciones */
+      .adenda-actions { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px; padding: 0 20px 20px; }
+      .adenda-actions .btn { padding: 4px 8px; font-size: 12px; }
+      .giudico-btn-secondary2 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background:#374151;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:700;
+  border:1px solid rgba(255,255,255,.14);
+  transition:.2s;
+}
+.giudico-btn-secondary2:hover { background:#1f2937; }
+    </style>
+
+    <div class="g-main-wrap">
+  
+      <div class="g-bg"></div>
+      <div class="g-overlay"></div>
+      <div class="g-frame"></div>
+
+
+
+
+      <div class="g-content">
+
+
+
+
+
+
+        <div class="adenda-container">
+          <!-- Barra superior -->
+          <div class="adenda-toolbar">
+          
+            <a href="/giudico/gestion_contratos" class="giudico-btn-secondary" t-translation="on">Volver</a>
+            <h2 class="adenda-title" t-translation="on">Lista de Adendas</h2>
+            <div><a href="/giudico/adenda/nueva" class="giudico-btn" t-translation="on">NUEVA ADENDA</a></div>
+          </div>
+
+          <!-- Lista -->
+          <t t-if="adendas">
+            <div class="adendas-grid">
+              <t t-foreach="adendas" t-as="adenda">
+                <div class="adenda-card">
+                  <!-- Estado -->
+                  <div t-att-class="'estado-banner estado-%s' % adenda.estado">
+                    <t t-out="dict(adenda._fields['estado'].selection).get(adenda.estado)"/>
+                  </div>
+                  <div class="adenda-content">
+                    <h4><t t-out="adenda.name"/></h4>
+                    <p><strong t-translation="on">Contrato:</strong> <t t-out="adenda.contrato_id.name"/></p>
+                    <p><strong t-translation="on">Fecha:</strong> <t t-out="adenda.fecha"/></p>
+                    <p><strong t-translation="on">Seller:</strong><br/> 
+                       <pre style="white-space: pre-line;"><t t-out="adenda.seller or ''"/></pre>
+                    </p>
+                    <p><strong t-translation="on">Buyer:</strong><br/> 
+                       <pre style="white-space: pre-line;"><t t-out="adenda.buyer or ''"/></pre>
+                    </p>
+                  </div>
+                  <div class="adenda-actions">
+                    <a t-att-href="'/giudico/adenda/pdf?id=%d' % adenda.id" class="btn btn-secondary btn-sm" target="_blank" t-translation="on">PDF</a>
+                    <a t-att-href="'/giudico/adenda/nueva?id=%d' % adenda.id" class="btn btn-warning btn-sm" t-translation="on">Editar</a>
+                    <a t-att-href="'/giudico/adenda/eliminar?id=%d' % adenda.id"
+                       class="btn btn-danger btn-sm"
+                       onclick="return confirm('¿Seguro que quieres eliminar esta adenda?');"
+                       t-translation="on">Eliminar</a>
+                    <a t-att-href="'/giudico/adenda/cambiar_estado?id=%d&amp;nuevo_estado=borrador' % adenda.id"
+                       class="btn btn-outline-secondary btn-sm" t-translation="on">Borrador</a>
+                    <a t-att-href="'/giudico/adenda/cambiar_estado?id=%d&amp;nuevo_estado=confirmada' % adenda.id"
+                       class="btn btn-outline-success btn-sm" t-translation="on">Confirmar</a>
+                  </div>
+                </div>
+              </t>
+            </div>
+          </t>
+          <t t-if="not adendas">
+            <p t-translation="on">No hay adendas registradas.</p>
+          </t>
+        </div>
+      </div>
+    </div>
+   
+  </t>
+</template>
+
+
+    <!-- 📝 Nueva / Editar Adenda -->
+    <template id="giudico_nueva_adenda_template" name="Nueva Adenda">
+      <t t-call="web.layout">
+        <t t-call-assets="web.assets_frontend" t-js="true"/>
+        <t t-call="feedbio_provision_custom.giudico_lang_buttons"/>
+
+        <style>
+          body { background-image: url('/feedbio_provision_custom/static/src/img/backgroundweb.png');
+                 background-size: cover; background-attachment: fixed; }
+          .form-container { max-width: 900px; margin: 20px auto; background: #fff;
+                            padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+          .form-group { margin-bottom: 14px; }
+          label { font-weight: 600; }
+          textarea, input[type="text"], input[type="date"], select {
+            width: 100%; box-sizing: border-box;
+          }
+          textarea { resize: vertical; }
+          .submit-btn { background: #16a34a; color: #fff; padding: 12px 24px; border: 0; border-radius: 5px; font-size: 1rem;
+                        display: block; margin: 22px auto 0; }
+          .submit-btn:hover { background: #15803d; }
+          .giudico-btn-secondary2 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background:#374151;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:700;
+  border:1px solid rgba(255,255,255,.14);
+  transition:.2s;
+}
+.giudico-btn-secondary2:hover { background:#1f2937; }
+        </style>
+
+        <div class="form-container">
+          <form method="POST">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <input type="hidden" name="name" value=""/>
+
+            <div class="form-group">
+              <label t-translation="on">Contrato Relacionado</label>
+              <select name="contrato_id" required="required">
+                <t t-foreach="contratos" t-as="c">
+                  <option t-att-value="c.id" t-att-selected="str(default_vals.get('contrato_id')) == str(c.id)">
+                    <t t-out="c.name"/>
+                  </option>
+                </t>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label t-translation="on">Fecha de Adenda</label>
+              <input type="date" name="fecha"
+                     t-att-value="default_vals.get('fecha') and str(default_vals.get('fecha')) or ''"
+                     required="required"/>
+            </div>
+
+            <div class="form-group">
+              <label t-translation="on">Seller</label>
+              <textarea name="seller" rows="5"><t t-raw="default_vals.get('seller') or ''"/></textarea>
+            </div>
+
+            <div class="form-group">
+              <label t-translation="on">Buyer</label>
+              <textarea name="buyer" rows="6"><t t-raw="default_vals.get('buyer') or ''"/></textarea>
+            </div>
+
+            <div class="form-group">
+              <label t-translation="on">Acuerdos:</label>
+              <textarea name="descripcion" rows="6"><t t-raw="default_vals.get('descripcion') or ''"/></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn" t-translation="on">Guardar Adenda</button>
+            
+          </form>
+        </div>
+      </t>
+    </template>
+
+  </data>
+</odoo>

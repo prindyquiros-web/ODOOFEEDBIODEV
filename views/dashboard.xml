@@ -1,0 +1,565 @@
+<odoo>
+
+    <data>
+  <template id="feedbio_dashboard_template" name="FeedBio Dashboard">
+  <t t-name="feedbio_provision_custom.feedbio_dashboard_template" t-call="web.layout">
+    <t t-set="primary_color" t-value="'#28a745'" />
+
+    <style>
+      .dashboard-container {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .logo-img {
+        max-width: 250px;
+        margin-bottom: 30px;
+      }
+
+      .company-btn {
+        background-color: #28a745;
+        border: none;
+        color: white;
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        border-radius: 0.5rem;
+        margin: 10px;
+        width: 300px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease;
+      }
+
+      .company-btn:hover {
+        background-color: #218838;
+      }
+    </style>
+
+    <div class="dashboard-container">
+      <img t-att-src="'/feedbio_provision_custom/static/src/img/feedbio_logo.jpg'" class="logo-img"/>
+
+      <div>
+        <t t-foreach="companies" t-as="empresa">
+          <form t-att-action="'/feedbio/select_company/%d' % empresa.id" method="post" style="display: inline-block;">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <button type="submit" class="company-btn">
+              <t t-out="empresa.name"/>
+            </button>
+          </form>
+        </t>
+      </div>
+    </div>
+  </t>
+</template>
+
+
+<template id="giudico_main_menu_template" name="Menú Giudico">
+  <t t-call="web.layout">
+    <style>
+      .giudico-container {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .giudico-btn {
+        background-color: #28a745;
+        border: none;
+        color: white;
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        border-radius: 0.5rem;
+        margin: 10px;
+        width: 300px;
+        text-align: center;
+        text-decoration: none;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: background-color 0.3s ease;
+        display: inline-block;
+      }
+
+      .giudico-btn:hover {
+        background-color: #218838;
+      }
+    </style>
+
+    <div class="giudico-container">
+      <h2 t-translation="on">Bienvenido a Giudico</h2>
+      <h2 t-translation="on">Módulo Provisión de Materia Prima</h2>
+
+      <!-- Botones adicionales -->
+      <a href="/giudico/gestion_contratos" class="giudico-btn" t-translation="on">Gestión de Contratos</a>
+
+      <a href="/giudico/orden_pedido" class="giudico-btn" t-translation="on">Orden de Pedido</a>
+
+      <a href="#" class="giudico-btn" t-translation="on">Administración Lotes</a>
+
+      <a href="#" class="giudico-btn" t-translation="on">Recepción de Materia Prima</a>
+
+      <a href="#" class="giudico-btn" t-translation="on">Estado de Provisión</a>
+    </div>
+  </t>
+</template>
+
+
+
+
+
+  <template id="giudico_contratos_template" name="Lista de Contratos">
+  <t t-call="web.layout">
+    <t t-call-assets="web.assets_frontend" t-js="true"/>
+
+    <div class="contrato-container">
+      <h2 t-translation="on">Lista de Contratos</h2>
+      <a href="/giudico/contrato/nuevo" class="giudico-btn" t-translation="on">Nuevo Contrato</a>
+
+      <form method="get" action="/giudico/contratos" style="margin-bottom:20px;">
+        <input type="text" name="numero"
+       
+       t-att-value="request.params.get('numero')"/>
+<input type="text" name="proveedor"
+     
+       t-att-value="request.params.get('proveedor')"/>
+
+
+        <input type="date" name="fecha_inicio"
+               t-att-value="request.params.get('fecha_inicio')" style="margin-right:10px;"/>
+        <input type="date" name="fecha_fin"
+               t-att-value="request.params.get('fecha_fin')" style="margin-right:10px;"/>
+
+        <button type="submit" class="giudico-btn" t-translation="on">Buscar</button>
+      </form>
+
+      <t t-if="contratos">
+        <t t-foreach="contratos" t-as="contrato">
+          <div class="contrato-card">
+            <div>
+              <h4 style="color:green;"><t t-out="contrato.name"/></h4>
+              <p><t t-translation="on">Proveedor:</t> <t t-out="contrato.proveedor_id.name"/></p>
+              <p><t t-translation="on">Campaña:</t> <t t-out="contrato.campana_id.name"/></p>
+              <p><t t-translation="on">Fechas:</t> <t t-out="contrato.fecha_inicio"/> <t t-translation="on">a</t> <t t-out="contrato.fecha_fin"/></p>
+              <p><t t-translation="on">Estado:</t> <t t-out="contrato.estado"/></p>
+              <small><t t-translation="on">Creado el</t> <t t-out="contrato.create_date.strftime('%Y-%m-%d')"/></small>
+            </div>
+
+            <div class="contrato-actions" style="margin-top:10px;">
+              <a t-att-href="'/giudico/contrato/pdf?id=%d' % contrato.id"
+                 class="btn btn-secondary btn-sm" target="_blank" t-translation="on">PDF</a>
+
+              <a t-att-href="'/giudico/contrato/nuevo?id=%d' % contrato.id"
+                 class="btn btn-warning btn-sm" t-translation="on">Editar</a>
+
+              <a t-att-href="'/giudico/contrato/eliminar?id=%d' % contrato.id"
+   class="btn btn-danger btn-sm"
+   t-att-onclick="'return confirm(%s)' % _('[¿Seguro que quieres eliminar este contrato?]')"
+   t-translation="on">Eliminar</a>
+
+
+        <t t-foreach="dict(contrato._fields['estado'].selection).items()" t-as="estado_item">
+  <a t-att-href="'/giudico/contrato/cambiar_estado?id=%d&amp;nuevo_estado=%s' % (contrato.id, estado_item[0])"
+     t-att-class="'btn btn-sm m-1 %s' % ('btn-warning' if estado_item[0] == contrato.estado else 'btn-outline-warning')">
+    <t t-out="estado_item[1]"/>
+  </a>
+</t>
+
+
+            </div>
+          </div>
+        </t>
+      </t>
+
+      <t t-if="not contratos">
+        <p t-translation="on">No hay contratos registrados.</p>
+      </t>
+    </div>
+  </t>
+</template>
+
+
+<template id="giudico_nuevo_contrato_template" name="Nuevo contrato Giudico">
+  <t t-call="web.layout">
+    <style>
+      html, body {
+        height: auto !important;
+        overflow-y: auto !important; /* Permite scroll vertical */
+      }
+
+      .form-container {
+        max-width: 900px;
+        margin: 40px auto;
+        background: #f8f9fa;
+        padding: 30px;
+        border-radius: 8px;
+      }
+
+      .form-group {
+        margin-bottom: 14px;
+      }
+
+      label {
+        font-weight: 600;
+      }
+
+      textarea,
+      input[type="text"],
+      input[type="number"],
+      input[type="date"],
+      select {
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      textarea {
+        resize: vertical;
+      }
+
+      .submit-btn {
+        background: #28a745;
+        color: #fff;
+        padding: 12px 24px;
+        border: 0;
+        border-radius: 5px;
+        font-size: 1.05rem;
+        display: block;
+        margin: 22px auto 0;
+      }
+
+      .submit-btn:hover {
+        background: #218838;
+      }
+    </style>
+
+    <div class="form-container">
+      <h2 style="text-align:center;color:#28a745;" t-translation="on">Nuevo Contrato</h2>
+
+      <t t-if="error_msg">
+        <div style="background-color:#ffdddd; color:#a94442; padding:10px; border:1px solid #ebccd1; border-radius:4px; margin-bottom:15px;">
+          <strong t-translation="on">Atención:</strong> <t t-out="error_msg"/>
+        </div>
+      </t>
+
+      <form method="POST">
+        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+        <input type="hidden" name="reserved_ref" t-att-value="default_vals.get('reserved_ref') or ''"/>
+
+        <div class="form-group">
+          <label t-translation="on">N° de Contrato</label>
+          <input type="text" id="contract_no_preview" readonly="readonly"
+       t-att-value="default_vals.get('name') or _('Se generará automáticamente al guardar')"/>
+
+        </div>
+
+        <div class="form-group">
+          <label t-translation="on">Empresa</label>
+          <input type="text" t-att-value="request.env.company.name" readonly="readonly"/>
+        </div>
+
+        <div class="form-group">
+          <label t-translation="on">Proveedor</label>
+          <select name="proveedor_id" required="required">
+            <t t-foreach="proveedores" t-as="p">
+              <option t-att-value="p.id"
+                      t-att-selected="str(p.id) == str(default_vals.get('proveedor_id'))"><t t-out="p.name"/></option>
+            </t>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label t-translation="on">Campaña</label>
+          <select name="campana_id" required="required">
+            <t t-foreach="campanas" t-as="c">
+              <option t-att-value="c.id"
+                      t-att-selected="str(c.id) == str(default_vals.get('campana_id'))"><t t-out="c.name"/></option>
+            </t>
+          </select>
+        </div>
+
+        <div class="form-group" style="width: 100%;">
+          <label t-translation="on">Comprador</label>
+          <textarea name="buyer" rows="8" style="width: 100%; resize: vertical;">
+            <t t-out="default_vals.get('buyer') or ''"/>
+          </textarea>
+        </div>
+
+        <div class="form-group" style="width: 100%;">
+          <label t-translation="on">Vendedor</label>
+          <textarea name="seller" rows="8" style="width: 100%; resize: vertical;">
+            <t t-out="default_vals.get('seller') or ''"/>
+          </textarea>
+        </div>
+
+        <div class="form-group">
+          <label t-translation="on">Producto contratado</label>
+          <select name="producto_id" id="producto_id" class="form-control">
+            <t t-foreach="productos" t-as="prod">
+              <option t-att-value="prod.id"><t t-out="prod.display_name"/></option>
+            </t>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label t-translation="on">Fecha de inicio</label>
+          <input type="date" name="fecha_inicio" t-att-value="default_vals.get('fecha_inicio') or ''"/>
+        </div>
+
+        <div class="form-group">
+          <label t-translation="on">Fecha de fin</label>
+          <input type="date" name="fecha_fin" t-att-value="default_vals.get('fecha_fin') or ''"/>
+        </div>
+
+        <div class="form-group">
+          <label t-translation="on">Cantidad total (toneladas)</label>
+          <input type="number" step="0.01" name="cantidad_total" t-att-value="default_vals.get('cantidad_total') or ''"/>
+        </div>
+
+        <div class="form-group" style="width: 100%;">
+          <label t-translation="on">Precio estimado</label>
+          <textarea name="precio" rows="8" style="width: 100%; resize: vertical;">
+            <t t-out="default_vals.get('precio') or ''"/>
+          </textarea>
+        </div>
+
+        <div class="form-group" style="width: 100%;">
+          <label t-translation="on">Forma de pago</label>
+          <textarea name="forma_pago" rows="8" style="width: 100%; resize: vertical;">
+            <t t-out="default_vals.get('forma_pago') or ''"/>
+          </textarea>
+        </div>
+
+        <div class="form-group" style="width: 100%;">
+          <label t-translation="on">Periodo de entrega</label>
+          <textarea name="periodo_entrega" rows="8" style="width: 100%; resize: vertical;">
+            <t t-out="default_vals.get('periodo_entrega') or ''"/>
+          </textarea>
+        </div>
+
+        <div class="form-group" style="width: 100%;">
+          <label t-translation="on">Lugar de entrega</label>
+          <textarea name="lugar_entrega" rows="8" style="width: 100%; resize: vertical;">
+            <t t-out="default_vals.get('lugar_entrega') or ''"/>
+          </textarea>
+        </div>
+
+        <div class="form-group" style="width: 100%;">
+          <label t-translation="on">Tipo de empaque (packing)</label>
+          <textarea name="packing" rows="8" style="width: 100%; resize: vertical;">
+            <t t-out="default_vals.get('packing') or ''"/>
+          </textarea>
+        </div>
+
+        <div class="form-group" style="width: 100%;">
+          <label t-translation="on">Calidad</label>
+          <textarea name="calidad" rows="8" style="width: 100%; resize: vertical;">
+            <t t-out="default_vals.get('calidad') or ''"/>
+          </textarea>
+        </div>
+
+        <div class="form-group">
+          <label t-translation="on">Origen</label>
+          <input type="text" name="origin" t-att-value="default_vals.get('origin') or ''"/>
+        </div>
+
+        <div class="form-group" style="width: 100%;">
+          <label t-translation="on">Documentos requeridos</label>
+          <textarea name="documentos_requeridos" rows="8" style="width: 100%; resize: vertical;">
+            <t t-out="default_vals.get('documentos_requeridos') or ''"/>
+          </textarea>
+        </div>
+
+        <div class="form-group">
+          <label t-translation="on">Fecha de firma</label>
+          <input type="date" name="fecha_firma" t-att-value="default_vals.get('fecha_firma') or ''"/>
+        </div>
+
+        <div class="form-group" style="width: 100%;">
+          <label t-translation="on">Cláusula de disputas</label>
+          <textarea name="disputas" rows="8" style="width: 100%; resize: vertical;">
+            <t t-out="default_vals.get('disputas') or ''"/>
+          </textarea>
+        </div>
+
+        <div class="form-group">
+          <label t-translation="on"><strong>Cláusula final</strong></label>
+          <textarea name="final_provision"
+                    id="final_provision"
+                    class="form-control"
+                   
+                    t-out="default_vals.get('final_provision', '')"/>
+        </div>
+
+        <div class="form-group" style="width: 100%;">
+          <label t-translation="on">Observaciones</label>
+          <textarea name="observaciones" rows="8" style="width: 100%; resize: vertical;">
+            <t t-out="default_vals.get('observaciones') or ''"/>
+          </textarea>
+        </div>
+
+        <button type="submit" class="submit-btn" t-translation="on">Guardar Contrato</button>
+      </form>
+    </div>
+
+    <t t-call-assets="web.assets_frontend" t-js="true"/>
+  </t>
+</template>
+
+
+
+<template id="giudico_orden_pedido_template" name="Lista Ordenes de Pedido">
+  <t t-call="web.layout">
+    <h2 t-translation="on">Lista de Órdenes de Pedido</h2>
+    <a href="/giudico/orden_pedido/nuevo" class="giudico-btn" t-translation="on">Nueva Orden</a>
+
+    <form method="get" action="/giudico/orden_pedido" style="margin-bottom:20px;">
+     <input type="text" name="numero"
+      
+       t-att-value="request.params.get('numero')"/>
+<input type="text" name="proveedor"
+       
+       t-att-value="request.params.get('proveedor')"/>
+      <input type="date" name="fecha_inicio"
+             t-att-value="request.params.get('fecha_inicio')" style="margin-right:10px;"/>
+      <input type="date" name="fecha_fin"
+             t-att-value="request.params.get('fecha_fin')" style="margin-right:10px;"/>
+      <button type="submit" class="giudico-btn" t-translation="on">Buscar</button>
+    </form>
+
+    <t t-if="ordenes">
+      <t t-foreach="ordenes" t-as="o">
+        <div class="contrato-card">
+          <h4 style="color:green;"><t t-out="o.name"/></h4>
+          <p><t t-translation="on">Proveedor:</t> <t t-out="o.supplier_name"/></p>
+          <p><t t-translation="on">Contrato:</t> <t t-out="o.contract_number"/></p>
+          <p><t t-translation="on">Cantidad:</t> <t t-out="o.cantidad_mt"/> MT</p>
+          <p><t t-translation="on">Fecha de entrega:</t> <t t-out="o.fecha_entrega"/></p>
+          <div style="margin-top:10px;">
+            <a t-att-href="'/giudico/orden_pedido/pdf?id=%d' % o.id"
+               class="btn btn-secondary btn-sm" target="_blank" t-translation="on">PDF</a>
+            <a t-att-href="'/giudico/orden_pedido/nuevo?id=%d' % o.id"
+               class="btn btn-warning btn-sm" t-translation="on">Editar</a>
+            <a t-att-href="'/giudico/orden_pedido/eliminar?id=%d' % o.id"
+               class="btn btn-danger btn-sm"
+              t-att-onclick="'return confirm(%s)' % _('[¿Seguro que quieres eliminar la orden?]')"
+               t-translation="on">Eliminar</a>
+          </div>
+        </div>
+      </t>
+    </t>
+
+    <t t-if="not ordenes">
+      <p t-translation="on">No hay órdenes registradas.</p>
+    </t>
+  </t>
+</template>
+
+<template id="giudico_nueva_orden_pedido_template" name="Nueva Orden de Pedido">
+  <t t-call="web.layout">
+    <style>
+      .form-container { max-width: 900px; margin: 30px auto; background: #f8f9fa; padding: 24px; border-radius: 8px; }
+      .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      .form-row-1 { display: grid; grid-template-columns: 1fr; gap: 14px; }
+      label { font-weight: 600; }
+      input, select { width: 100%; box-sizing: border-box; }
+    </style>
+
+    <div class="form-container">
+      <h2 style="color:#28a745; text-align:center;" t-translation="on">Nueva Orden de Pedido</h2>
+      <form method="POST">
+        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+        <input type="hidden" name="id" t-att-value="orden.id if orden else ''"/>
+
+        <div class="form-row">
+          <div>
+            <label t-translation="on">N° de Solicitud</label>
+            <input type="text" name="name" t-att-value="orden.name if orden else 'Nuevo'" readonly="readonly"/>
+          </div>
+          <div>
+            <label t-translation="on">Fecha de Solicitud</label>
+            <input type="date" name="fecha_solicitud" t-att-value="orden.fecha_solicitud if orden else ''" disabled="disabled"/>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label t-translation="on">Contrato Asociado</label>
+            <select name="contrato_id" required="required">
+              <t t-foreach="contratos" t-as="c">
+                <option t-att-value="c.id" t-att-selected="orden and c.id == (orden.contrato_id.id if orden.contrato_id else 0)">
+                  <t t-out="c.name"/>
+                </option>
+              </t>
+            </select>
+          </div>
+          <div>
+            <label t-translation="on">Código Interno de Proveedor</label>
+            <input type="text" t-att-value="orden.supplier_code if orden else ''" disabled="disabled"/>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label t-translation="on">Nombre del Proveedor</label>
+            <input type="text" t-att-value="orden.supplier_name if orden else ''" disabled="disabled"/>
+          </div>
+          <div>
+            <label t-translation="on">N° de Contrato Asociado</label>
+            <input type="text" t-att-value="orden.contract_number if orden else ''" disabled="disabled"/>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label t-translation="on">Producto</label>
+            <input type="text" t-att-value="orden.product if orden else ''" disabled="disabled"/>
+          </div>
+          <div>
+            <label t-translation="on">Campaña de Comercialización</label>
+            <input type="text" t-att-value="orden.campaign if orden else ''" disabled="disabled"/>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label t-translation="on">MT Contratados</label>
+            <input type="number" step="0.001" name="mt_contracted" t-att-value="orden.mt_contracted if orden else ''" required="required"/>
+          </div>
+          <div></div>
+        </div>
+
+        <h3 style="margin-top:18px;" t-translation="on">Detalle de entrega</h3>
+        <div class="form-row">
+          <div>
+            <label t-translation="on">Cantidad (MT)</label>
+            <input type="number" step="0.01" name="cantidad_mt" t-att-value="orden.cantidad_mt if orden else ''" required="required"/>
+          </div>
+          <div>
+            <label t-translation="on">Precio Unitario (MT)</label>
+            <input type="number" step="0.01" name="precio_unitario" t-att-value="orden.precio_unitario if orden else ''" required="required"/>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label t-translation="on">Lugar de Entrega</label>
+            <input type="text" name="lugar_entrega" t-att-value="orden.lugar_entrega if orden else ''" required="required"/>
+          </div>
+          <div>
+            <label t-translation="on">Fecha de Entrega</label>
+            <input type="date" name="fecha_entrega" t-att-value="orden.fecha_entrega if orden else ''" required="required"/>
+          </div>
+        </div>
+
+        <button type="submit" class="giudico-btn" style="margin-top:16px;" t-translation="on">Guardar</button>
+      </form>
+    </div>
+  </t>
+</template>
+
+
+
+    </data>
+</odoo>
+

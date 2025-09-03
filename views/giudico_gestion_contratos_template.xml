@@ -1,0 +1,695 @@
+<odoo>
+  <data>
+    <template id="giudico_gestion_contratos_template" name="Gestión de Contratos">
+      <t t-call="web.layout">
+<t t-call="feedbio_provision_custom.giudico_lang_buttons"/>
+        <div class="g-main-wrap">
+          <div class="g-bg"></div>
+          <div class="g-overlay"></div>
+          <div class="g-frame"></div>
+
+          <div class="g-content">
+            <!-- Logo -->
+            <img src="/feedbio_provision_custom/static/src/img/LogoGiudico.png"
+                 alt="Giudico" class="g-logo"/>
+
+            <!-- Título -->
+            <h2 class="g-title" t-translation="on">📄 GESTIÓN DE CONTRATOS</h2>
+
+            <!-- Botones -->
+            <div class="g-grid">
+              <a href="/giudico/contratos" class="giudico-btn">
+  <t t-translation="on"><span class="g-emoji">📑</span> CONTRATOS</t>
+</a>
+
+              <a href="/giudico/adendas" class="giudico-btn" t-translation="on">
+                <span class="g-emoji">📝</span> ADENDAS
+              </a>
+            </div>
+                            <div class="g-actions" style="margin-top: 24px;">
+  <a href="/giudico/menu" class="giudico-btn-secondary" t-translation="on">
+    Volver
+  </a>
+</div>
+          </div>
+ 
+        </div>
+
+        <!-- CSS: mismo estilo que giudioco/menu -->
+        <style>
+          .g-main-wrap {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+          }
+          .g-bg {
+            position: absolute; inset: 0;
+            background-image: url('/feedbio_provision_custom/static/src/img/backgroundweb.png');
+            background-size: cover; background-position: center; background-repeat: no-repeat;
+            transform: scale(1.02);
+            filter: saturate(1.05);
+          }
+          .g-overlay {
+            position: absolute; inset: 0;
+            background: radial-gradient(ellipse at center, rgba(0,0,0,.15), rgba(0,0,0,.35));
+          }
+          .g-frame {
+            position: absolute; inset: 12px;
+            border-radius: 16px;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+            pointer-events: none;
+          }
+          .g-content {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 1100px;
+            padding: 28px 20px 48px;
+            text-align: center;
+          }
+          .g-logo {
+            height: clamp(100px, 20vw, 200px);
+
+            object-fit: contain;
+            margin: 0 auto 12px;
+            display: block;
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,.25));
+          }
+          .g-title {
+            font-size: clamp(20px, 2.4vw, 28px);
+            letter-spacing: .5px;
+            color: #ffffffff;
+            font-weight: 600;
+            text-shadow: 0 2px 6px rgba(3, 42, 9, 0.45);
+            margin: 0 0 22px;
+          }
+          .g-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            justify-content: center;
+          }
+          .giudico-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: 10px;
+            background: #16a34a;
+            color: #fff;
+            padding: 14px 18px;
+            border-radius: 12px;
+            min-height: 56px;
+            text-decoration: none;
+            font-weight: 700;
+            letter-spacing: .3px;
+            box-shadow: 0 8px 18px rgba(0,0,0,.18);
+            border: 1px solid rgba(255,255,255,.14);
+            transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+          }
+          .giudico-btn:hover {
+            transform: translateY(-2px);
+            background: #15803d;
+            box-shadow: 0 12px 22px rgba(0,0,0,.22);
+          }
+          .g-emoji { font-size: 18px; }
+          /* Botón secundario (Volver) */
+.giudico-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #374151; /* gris oscuro */
+  color: #ffffff;
+  padding: 14px 18px;
+  border-radius: 12px;
+  min-height: 56px;
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: .3px;
+  box-shadow: 0 4px 10px rgba(0,0,0,.15);
+  border: 1px solid rgba(255,255,255,.14);
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+
+.giudico-btn-secondary:hover {
+  transform: translateY(-2px);
+  background: #1f2937; /* más oscuro al pasar */
+  box-shadow: 0 8px 16px rgba(0,0,0,.22);
+}
+
+          .giudico-btn-secondary2 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background:#374151;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:700;
+  border:1px solid rgba(255,255,255,.14);
+  transition:.2s;
+}
+.giudico-btn-secondary2:hover { background:#1f2937; }
+        </style>
+
+
+      </t>
+    </template>
+
+
+<template id="giudico_contratos_template" name="Lista de Contratos">
+  <t t-call="web.layout">
+    <t t-call-assets="web.assets_frontend" t-js="true"/>
+<t t-call="feedbio_provision_custom.giudico_lang_buttons"/>
+    <style>
+     html, body {
+  height: 100%;
+  margin: 0;
+  overflow-y: auto;   /* scroll global */
+}
+
+.g-main-wrap {
+  position: relative;
+  min-height: 100vh;
+  display: block;     /* ya no flex centrado */
+  padding: 20px 0;
+  overflow: visible;  /* deja crecer contenido */
+}
+
+/* === Fondo fijo === */
+.g-bg,
+.g-overlay,
+.g-frame {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.g-bg {
+  background-image: url('/feedbio_provision_custom/static/src/img/backgroundweb.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transform: scale(1.02);
+  filter: saturate(1.05);
+}
+.g-overlay {
+  background: radial-gradient(ellipse at center, rgba(0,0,0,.15), rgba(0,0,0,.35));
+}
+.g-frame {
+  inset: 12px;
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+}
+
+/* === Contenido centrado === */
+.g-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1200px;
+  padding: 28px 20px 48px;
+  margin: 0 auto;   /* ✅ centra horizontalmente */
+}
+
+      /* === Barra superior / acciones === */
+      .contrato-toolbar{
+        position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:12px;
+        background:rgba(244,246,249,.92);padding:10px 12px;margin-bottom:16px;border-radius:12px;
+        box-shadow:0 2px 8px rgba(0,0,0,.10);backdrop-filter:blur(2px)
+      }
+      .contrato-title{margin:0;font-size:20px;font-weight:800;color:#16a34a}
+      .giudico-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:#16a34a;color:#fff;
+        padding:10px 18px;border-radius:12px;text-decoration:none;font-weight:700;letter-spacing:.3px;
+        box-shadow:0 8px 18px rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.14);transition:transform .18s, box-shadow .18s, background .18s}
+      .giudico-btn:hover{transform:translateY(-2px);background:#15803d;box-shadow:0 12px 22px rgba(0,0,0,.22)}
+      .giudico-btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:#374151;color:#fff;
+        padding:10px 18px;border-radius:12px;text-decoration:none;font-weight:700;box-shadow:0 4px 10px rgba(0,0,0,.15);
+        border:1px solid rgba(255,255,255,.14);transition:transform .18s, box-shadow .18s, background .18s}
+      .giudico-btn-secondary:hover{transform:translateY(-2px);background:#1f2937;box-shadow:0 8px 16px rgba(0,0,0,.22)}
+
+      /* === Caja principal semitransparente para contenido === */
+      .contrato-container{
+        background:rgba(255,255,255,.92);border-radius:14px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.15)
+      }
+
+      /* === Filtros === */
+      .contrato-filtros{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:0 0 16px}
+      .contrato-filtros input{height:38px;padding:6px 10px;border-radius:10px;border:1px solid #e5e7eb}
+      .contrato-filtros button{border:0}
+
+      /* === Grid tarjetas === */
+      .contratos-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(300px,1fr));gap:20px}
+      .contrato-card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,.10);
+        display:flex;flex-direction:column;transition:transform .2s}
+      .contrato-card:hover{transform:translateY(-3px)}
+      .estado-banner{padding:6px;text-align:center;font-weight:800;color:#fff;font-size:14px}
+      .estado-borrador{background:#6c757d}.estado-aprobado{background:#007bff}.estado-activo{background:#16a34a}
+      .estado-inactivo{background:#dc3545}.estado-finalizado{background:#ffc107;color:#000}
+      .contrato-content{padding:18px}
+      .contrato-content h4{font-size:18px;margin:0 0 8px;color:#16a34a}
+      .contrato-content p{margin:3px 0;font-size:14px;color:#374151}
+      .contrato-content small{font-size:12px;color:#6b7280}
+      .contrato-actions{margin:12px 0 18px;display:flex;flex-wrap:wrap;gap:6px;padding:0 18px}
+      .contrato-actions .btn{padding:4px 8px;font-size:12px}
+            .giudico-btn-secondary2 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background:#374151;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:700;
+  border:1px solid rgba(255,255,255,.14);
+  transition:.2s;
+}
+.giudico-btn-secondary2:hover { background:#1f2937; }
+        </style>
+
+
+    <div class="g-main-wrap">
+      <div class="g-bg"></div>
+      <div class="g-overlay"></div>
+      <div class="g-frame"></div>
+
+      <div class="g-content">
+        <div class="contrato-container">
+          <!-- Toolbar -->
+          <div class="contrato-toolbar">
+            <a href="/giudico/gestion_contratos" class="giudico-btn-secondary" t-translation="on">Volver</a>
+            <h2 class="contrato-title" t-translation="on">Lista de Contratos</h2>
+            <a href="/giudico/contrato/nuevo" class="giudico-btn" t-translation="on">NUEVO CONTRATO</a>
+          </div>
+
+          <!-- Filtros -->
+          <form method="get" action="/giudico/contratos" class="contrato-filtros">
+            <input type="text" name="numero" t-att-value="request.params.get('numero')" placeholder="N° contrato"/>
+            <input type="text" name="proveedor" t-att-value="request.params.get('proveedor')" placeholder="Proveedor"/>
+            <input type="date" name="fecha_inicio" t-att-value="request.params.get('fecha_inicio')"/>
+            <input type="date" name="fecha_fin" t-att-value="request.params.get('fecha_fin')"/>
+            <button type="submit" class="giudico-btn" t-translation="on">Buscar</button>
+          </form>
+
+          <!-- Lista -->
+          <t t-if="contratos">
+            <div class="contratos-grid">
+              <t t-foreach="contratos" t-as="contrato">
+                <div class="contrato-card">
+                  <!-- Estado -->
+                  <div t-att-class="'estado-banner estado-%s' % contrato.estado">
+                    <t t-out="contrato.estado.capitalize()"/>
+                  </div>
+
+                  <!-- Contenido -->
+                  <div class="contrato-content">
+                    <h4><t t-out="contrato.name"/></h4>
+                    <p><strong t-translation="on">Código histórico:</strong>
+   <t t-out="contrato.x_codigo_historico or '-'"/>
+</p>
+                    <p><strong t-translation="on">Proveedor:</strong> <t t-out="contrato.proveedor_id.name"/></p>
+                    <p><strong t-translation="on">Campaña:</strong> <t t-out="contrato.campana_id.name"/></p>
+                    <p><strong t-translation="on">Fechas:</strong> <t t-out="contrato.fecha_inicio"/> - <t t-out="contrato.fecha_fin"/></p>
+                    <small t-translation="on">Creado el</small>
+                    <small><t t-out="contrato.create_date.strftime('%Y-%m-%d')"/></small>
+                  </div>
+
+                  <!-- Acciones -->
+                  <div class="contrato-actions">
+                    <a t-att-href="'/giudico/contrato/pdf?id=%d' % contrato.id" class="btn btn-secondary btn-sm" target="_blank">PDF</a>
+                    <a t-att-href="'/giudico/contrato/nuevo?id=%d' % contrato.id" class="btn btn-warning btn-sm" t-translation="on">Editar</a>
+                    <a t-att-href="'/giudico/contrato/eliminar?id=%d' % contrato.id"
+                       class="btn btn-danger btn-sm"
+                       onclick="return confirm('¿Seguro que quieres eliminar este contrato?');"
+                       t-translation="on">Eliminar</a>
+
+                    <t t-foreach="['borrador','aprobado','activo','inactivo','finalizado']" t-as="estado">
+                      <a t-att-href="'/giudico/contrato/cambiar_estado?id=%d&amp;nuevo_estado=%s' % (contrato.id, estado)"
+                         t-att-class="'btn btn-sm %s' % ('btn-warning' if estado == contrato.estado else 'btn-outline-warning')">
+                        <t t-out="dict(contrato._fields['estado'].selection).get(estado)"/>
+                      </a>
+                    </t>
+                  </div>
+                </div>
+              </t>
+            </div>
+          </t>
+
+          <t t-if="not contratos">
+            <p t-translation="on">No hay contratos registrados.</p>
+          </t>
+        </div>
+      </div>
+    </div>
+  </t>
+</template>
+
+
+<template id="giudico_nuevo_contrato_template" name="Nuevo contrato Giudico">
+  <t t-call="web.layout">
+    <t t-call-assets="web.assets_frontend" t-js="true"/>
+    <t t-call="feedbio_provision_custom.giudico_lang_buttons"/>
+    <style>
+      html, body {
+        height: auto !important;
+        overflow-y: auto !important;
+        background-image: url('/feedbio_provision_custom/static/src/img/backgroundweb.png');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+      }
+
+      /* Barra superior */
+      .contrato-toolbar {
+        position: sticky; top: 0; z-index: 10;
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        background: rgba(244,246,249,.9);
+        padding: 10px 12px; margin-bottom: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.06);
+        backdrop-filter: blur(2px);
+      }
+      .contrato-title {
+        margin: 0; font-size: 20px; font-weight: 700; color: #28a745;
+      }
+      .giudico-btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: #374151;
+        color: #ffffff;
+        padding: 10px 18px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 700;
+        box-shadow: 0 4px 10px rgba(0,0,0,.15);
+        transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+      }
+      .giudico-btn-secondary:hover {
+        transform: translateY(-2px);
+        background: #1f2937;
+        box-shadow: 0 8px 16px rgba(0,0,0,.22);
+      }
+
+      /* Contenedor del formulario */
+      .form-container {
+        max-width: 900px;
+        margin: 0 auto 40px;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      }
+      .form-group {
+        margin-bottom: 14px;
+      }
+      label {
+        font-weight: 600;
+      }
+      textarea,
+      input[type="text"],
+      input[type="number"],
+      input[type="date"],
+      select {
+        width: 100%;
+        box-sizing: border-box;
+      }
+      textarea {
+        resize: vertical;
+      }
+      .submit-btn {
+        background: #28a745;
+        color: #fff;
+        padding: 12px 24px;
+        border: 0;
+        border-radius: 5px;
+        font-size: 1.05rem;
+        display: block;
+        margin: 22px auto 0;
+      }
+      .submit-btn:hover {
+        background: #218838;
+      }
+             .giudico-btn-secondary2 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background:#374151;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:700;
+  border:1px solid rgba(255,255,255,.14);
+  transition:.2s;
+}
+.giudico-btn-secondary2:hover { background:#1f2937; }
+        </style>
+ 
+    <!-- Barra superior -->
+    <div class="contrato-toolbar">
+      <a href="/giudico/contratos" class="giudico-btn-secondary" t-translation="on">Volver</a>
+    
+      <h2 class="contrato-title" t-translation="on">Nuevo Contrato</h2>
+      <div style="width: 80px;"></div> <!-- espacio para balancear -->
+    </div>
+
+    <div class="form-container">
+    
+
+      <t t-if="error_msg">
+        <div style="background-color:#ffdddd; color:#a94442; padding:10px; border:1px solid #ebccd1; border-radius:4px; margin-bottom:15px;">
+          <strong t-translation="on">Atención:</strong>
+
+        </div>
+      </t>
+
+      <!-- Formulario original -->
+      <form method="POST">
+        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+        <input type="hidden" name="reserved_ref" t-att-value="default_vals.get('reserved_ref') or ''"/>
+
+         <div class="form-group">
+  <label t-translation="on">Contract No.</label>
+  <input type="text" id="contract_no_preview" readonly="readonly"
+         t-att-value="default_vals.get('name') or ''"
+         placeholder="Se generará automáticamente al guardar"/>
+</div>
+
+
+        <div class="form-group">
+           <label t-translation="on">Empresa</label>
+          <input type="text" t-att-value="request.env.company.name" readonly="readonly"/>
+        </div>
+
+        <div class="form-group">
+  <label t-translation="on">Código histórico -Opcional-solo si es un contrato historico</label>
+  <input type="text" name="x_codigo_historico"
+         t-att-value="default_vals.get('x_codigo_historico') or ''"/>
+</div>
+
+        <div class="form-group">
+          <label><t t-translation="on">Proveedor</t></label>
+     <select name="proveedor_id" required="required">
+  <option value="" t-translation="on">Seleccione un proveedor</option>
+  <t t-foreach="proveedores" t-as="prov">
+    <option t-att-value="prov.partner_id.id"
+            t-att-selected="str(prov.partner_id.id) == str(default_vals.get('proveedor_id'))">
+        <t t-out="prov.codigo"/> - <t t-out="prov.name"/>
+    </option>
+  </t>
+</select>
+
+
+
+        </div>
+
+        <div class="form-group">
+           <label t-translation="on">Campaña</label>
+          <select name="campana_id" required="required">
+            <t t-foreach="campanas" t-as="c">
+              <option t-att-value="c.id"
+                      t-att-selected="str(c.id) == str(default_vals.get('campana_id'))"><t t-out="c.name"/></option>
+            </t>
+          </select>
+        </div>
+
+
+<div class="form-group" style="width: 100%;">
+   <label t-translation="on">Comprador</label>
+  <textarea name="buyer" rows="8" 
+    style="width: 100%; resize: vertical;">
+    <t t-out="default_vals.get('buyer') or ''"/>
+  </textarea>
+</div>
+
+
+<div class="form-group" style="width: 100%;">
+   <label t-translation="on">Vendedor</label>
+  <textarea name="seller" rows="8" 
+    style="width: 100%; resize: vertical;">
+    <t t-out="default_vals.get('seller') or ''"/>
+  </textarea>
+</div>
+
+
+        <div class="form-group">
+           <label t-translation="on">Producto contratado</label>
+<select name="producto" id="producto" class="form-control" required="required">
+    <t t-foreach="productos" t-as="prod">
+        <option
+          t-att-value="prod.id"
+          t-att-selected="str(prod.id) == str(default_vals.get('producto'))"
+>
+          <t t-out="prod.display_name"/>
+        </option>
+    </t>
+</select>
+
+
+        </div>
+
+        <div class="form-group">
+           <label t-translation="on">Fecha de inicio</label>
+          <input type="date" name="fecha_inicio" t-att-value="default_vals.get('fecha_inicio') or ''"/>
+        </div>
+
+        <div class="form-group">
+           <label t-translation="on">Fecha de fin</label>
+          <input type="date" name="fecha_fin" t-att-value="default_vals.get('fecha_fin') or ''"/>
+        </div>
+
+        <div class="form-group">
+           <label t-translation="on">Cantidad total (toneladas)</label>
+          <input type="number" step="0.01" name="cantidad_total" t-att-value="default_vals.get('cantidad_total') or ''"/>
+        </div>
+
+
+<div class="form-group" style="width: 100%;">
+   <label t-translation="on">Precio estimado</label>
+  <textarea name="precio" rows="8" 
+    style="width: 100%; resize: vertical;">
+    <t t-out="default_vals.get('precio') or ''"/>
+  </textarea>
+</div>
+
+
+
+
+
+
+        <div class="form-group" style="width: 100%;">
+   <label t-translation="on">Forma de pago</label>
+  <textarea name="forma_pago" rows="8" 
+    style="width: 100%; resize: vertical;">
+    <t t-out="default_vals.get('forma_pago') or ''"/>
+  </textarea>
+</div>
+
+
+
+                <div class="form-group" style="width: 100%;">
+   <label t-translation="on">Periodo de entrega</label>
+  <textarea name="periodo_entrega" rows="8" 
+    style="width: 100%; resize: vertical;">
+    <t t-out="default_vals.get('periodo_entrega') or ''"/>
+  </textarea>
+</div>
+
+
+
+                        <div class="form-group" style="width: 100%;">
+   <label t-translation="on">Lugar de entrega</label>
+  <textarea name="lugar_entrega" rows="8" 
+    style="width: 100%; resize: vertical;">
+    <t t-out="default_vals.get('lugar_entrega') or ''"/>
+  </textarea>
+</div>
+
+
+
+                        <div class="form-group" style="width: 100%;">
+   <label t-translation="on">Tipo de empaque (packing)</label>
+  <textarea name="packing" rows="8" 
+    style="width: 100%; resize: vertical;">
+    <t t-out="default_vals.get('packing') or ''"/>
+  </textarea>
+</div>
+
+
+
+                                <div class="form-group" style="width: 100%;">
+   <label t-translation="on">Calidad</label>
+  <textarea name="calidad" rows="8" 
+    style="width: 100%; resize: vertical;">
+    <t t-out="default_vals.get('calidad') or ''"/>
+  </textarea>
+</div>
+
+        <div class="form-group">
+           <label t-translation="on">Origen</label>
+          <input type="text" name="origin" t-att-value="default_vals.get('origin') or ''"/>
+        </div>
+
+
+  
+
+                                        <div class="form-group" style="width: 100%;">
+   <label t-translation="on">Documentos requeridos</label>
+  <textarea name="documentos_requeridos" rows="8" 
+    style="width: 100%; resize: vertical;">
+    <t t-out="default_vals.get('documentos_requeridos') or ''"/>
+  </textarea>
+</div>
+
+        <div class="form-group">
+           <label t-translation="on">Fecha de firma</label>
+          <input type="date" name="fecha_firma" t-att-value="default_vals.get('fecha_firma') or ''"/>
+        </div>
+
+
+
+    <div class="form-group" style="width: 100%;">
+   <label t-translation="on">Cláusula de disputas</label>
+  <textarea name="disputas" rows="8" 
+    style="width: 100%; resize: vertical;">
+    <t t-out="default_vals.get('disputas') or ''"/>
+  </textarea>
+</div>
+
+<div class="form-group">
+     <label t-translation="on" for="final_provision"><strong>Final provision</strong></label>
+<textarea name="final_provision"
+          id="final_provision"
+          class="form-control"
+          ><t t-out="default_vals.get('final_provision', '')"/></textarea>
+
+
+
+</div>
+
+
+           <div class="form-group" style="width: 100%;">
+   <label t-translation="on">Observaciones</label>
+  <textarea name="observaciones" rows="8" 
+    style="width: 100%; resize: vertical;">
+    <t t-out="default_vals.get('observaciones') or ''"/>
+  </textarea>
+</div>
+
+<button type="submit" class="submit-btn" t-translation="on">Guardar Contrato</button>
+      </form>
+    </div>
+  </t>
+</template>
+
+
+  </data>
+</odoo>

@@ -1,0 +1,728 @@
+<odoo>
+  <template id="giudico_estado_provision_template" name="Estado de la Provisión">
+   <t t-call="web.layout">
+      <t t-call-assets="web.assets_frontend" t-js="true"/>
+<t t-call="feedbio_provision_custom.giudico_lang_buttons"/>
+   <style>
+   html, body {
+  height: 100%;
+  margin: 0;
+  overflow-y: auto;   /* scroll vertical en toda la página */
+}
+.g-main-wrap {
+  position: relative;
+  min-height: 100vh;
+  display: block;     /* ya no flex centrado */
+  padding: 20px 0;
+  overflow: visible;
+}
+
+/* === Fondo === */
+.g-bg,
+.g-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.g-bg {
+  background-image: url('/feedbio_provision_custom/static/src/img/backgroundweb.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: saturate(1.05);
+}
+
+.g-overlay {
+  background: radial-gradient(ellipse at center, rgba(0,0,0,.15), rgba(0,0,0,.35));
+}
+
+.g-frame {
+  position: fixed;
+  inset: 12px;             /* marco interior */
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* === Contenido === */
+.g-content {
+  position: relative;
+  z-index: 2;              /* siempre por encima del fondo */
+  width: 100%;
+  max-width: 1400px;
+  padding: 28px 20px 48px;
+  margin: 0 auto;
+}
+
+.g-logo {
+  height: clamp(80px,15vw,160px);
+  margin: 0 auto 20px;
+  display: block;
+}
+
+.g-title {
+  font-size: clamp(20px,2.4vw,28px);
+  letter-spacing: .5px;
+  color: #fff;
+  font-weight: 600;
+  text-shadow: 0 2px 6px rgba(3,42,9,.45);
+  margin: 0 0 22px;
+  text-align: center;
+}
+
+/* === Botones === */
+.giudico-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #16a34a;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 700;
+  border: 1px solid rgba(255,255,255,.14);
+  transition: .2s;
+}
+.giudico-btn:hover { background:#15803d; }
+
+.giudico-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background:#374151;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:700;
+  border:1px solid rgba(255,255,255,.14);
+  transition:.2s;
+}
+.giudico-btn-secondary:hover { background:#1f2937; }
+
+/* === Tabla === */
+.giudico-table-wrapper {
+  overflow-x: auto;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 4px 12px rgba(0,0,0,.15);
+  padding:10px;
+}
+.giudico-table {
+  width:100%;
+  border-collapse:collapse;
+  color:#111;
+}
+.giudico-table th,
+.giudico-table td {
+  padding:10px;
+  border:1px solid #ddd;
+  text-align:left;
+}
+.giudico-table th { background:#f8f9fa; font-weight:600; }
+.giudico-table tr:hover td { background:#f3f4f6; }
+
+.charts-card canvas {
+  width: 100% !important;      /* que ocupe todo el ancho disponible */
+  max-height: 320px;           /* altura fija y consistente */
+  margin: 20px auto;           /* separación vertical */
+  display: block;
+}
+
+.charts-card {
+  background: rgba(255,255,255,0.98);
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  padding: 24px;
+  margin-top: 24px;
+}
+
+/* Títulos de gráficos (Chart.js los renderiza dentro del canvas, pero 
+   podemos reforzar el estilo global con fuentes más fuertes) */
+.charts-card .chartjs-title {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: #111827 !important;  /* gris oscuro para buena lectura */
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+/* Asegura que las leyendas tengan buen contraste */
+.chart-legend {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #374151 !important;  /* gris medio */
+}
+
+.filter-box { margin-bottom:20px; }
+/* Títulos de cada gráfico */
+.chart-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;   /* gris oscuro fuerte */
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+</style>
+
+
+       <div class="g-main-wrap">
+        <div class="g-bg"></div><div class="g-overlay"></div><div class="g-frame"></div>
+        <div class="g-content">
+
+
+          <img src="/feedbio_provision_custom/static/src/img/LogoGiudico.png" class="g-logo"/>
+          <h2 class="g-title" t-translation="on">📊 Estado de la Provisión</h2>
+
+          <!-- Acciones top -->
+          <div style="margin-bottom:18px;text-align:center">
+            <a href="/giudico/menu" class="giudico-btn-secondary" t-translation="on">Volver</a>
+          </div>
+      <div style="margin:12px 0;text-align:center;display:flex;gap:6px;flex-wrap:wrap;justify-content:center">
+  <a href="?vista=todo" class="giudico-btn-secondary" t-translation="on">
+    Todo (<t t-out="counters['contratos'] + counters['ordenes'] + counters['campanas'] + counters['recepciones'] + counters['proveedores']"/>)
+  </a>
+  <a href="?vista=contratos" class="giudico-btn-secondary" t-translation="on">
+    Contratos (<t t-out="counters['contratos']"/>)
+  </a>
+  <a href="?vista=campanas" class="giudico-btn-secondary" t-translation="on">
+    Campañas (<t t-out="counters['campanas']"/>)
+  </a>
+  <a href="?vista=ordenes" class="giudico-btn-secondary" t-translation="on">
+    Órdenes (<t t-out="counters['ordenes']"/>)
+  </a>
+  <a href="?vista=recepciones" class="giudico-btn-secondary" t-translation="on">
+    Recepciones (<t t-out="counters['recepciones']"/>)
+  </a>
+  <a href="?vista=proveedores" class="giudico-btn-secondary" t-translation="on">
+    Proveedores (<t t-out="counters['proveedores']"/>)
+  </a>
+</div>
+       <form method="get" class="filter-box row g-3">
+
+       <input type="hidden" name="vista" t-att-value="vista"/>
+
+  <!-- Fechas (solo órdenes y recepciones) -->
+  <t t-if="vista in ('ordenes','recepciones','todo')">
+    <div class="col-md-2">
+      <label class="form-label" t-translation="on">Fecha Inicio</label>
+      <input type="date" name="fecha_ini" class="form-control"
+             t-att-value="filtros.get('fecha_ini')"/>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label" t-translation="on">Fecha Fin</label>
+      <input type="date" name="fecha_fin" class="form-control"
+             t-att-value="filtros.get('fecha_fin')"/>
+    </div>
+  </t>
+
+  <!-- Proveedor -->
+  <t t-if="vista in ('contratos','recepciones','proveedores','todo')">
+    <div class="col-md-3">
+      <label class="form-label" t-translation="on">Proveedor</label>
+      <select name="proveedor_id" class="form-select">
+        <option value="" t-translation="on">Todos</option>
+        <t t-foreach="proveedores" t-as="p">
+          <option t-att-value="p.id"
+                  t-att-selected="'selected' if filtros.get('proveedor_id') == str(p.id) else None">
+            <t t-out="p.name"/>
+          </option>
+        </t>
+      </select>
+    </div>
+  </t>
+
+  <!-- Campaña -->
+  <t t-if="vista in ('contratos','ordenes','recepciones','todo','campanas')">
+    <div class="col-md-3">
+      <label class="form-label" t-translation="on">Campaña</label>
+      <select name="campana_id" class="form-select">
+        <option value="" t-translation="on">Todas</option>
+        <t t-foreach="campanas" t-as="c">
+          <option t-att-value="c.id"
+                  t-att-selected="'selected' if filtros.get('campana_id') == str(c.id) else None">
+            <t t-out="c.name"/>
+          </option>
+        </t>
+      </select>
+    </div>
+  </t>
+
+  <!-- Estado Recepción -->
+  <t t-if="vista in ('recepciones','todo')">
+    <div class="col-md-3">
+      <label class="form-label" t-translation="on">Estado Recepción</label>
+      <select name="estado_recepcion" class="form-select">
+        <option value="" t-translation="on">Todos</option>
+        <t t-foreach="estados_recepcion" t-as="er">
+          <option t-att-value="er[0]"
+                  t-att-selected="'selected' if filtros.get('estado_recepcion') == er[0] else None">
+            <t t-out="er[1]"/>
+          </option>
+        </t>
+      </select>
+    </div>
+  </t>
+
+  <!-- Estado Lote -->
+  <t t-if="vista in ('recepciones','todo')">
+    <div class="col-md-3">
+      <label class="form-label" t-translation="on">Estado Lote</label>
+      <select name="estado" class="form-select">
+        <option value="" t-translation="on">Todos</option>
+        <t t-foreach="estados_lote" t-as="el">
+          <option t-att-value="el[0]"
+                  t-att-selected="'selected' if filtros.get('estado') == el[0] else None">
+            <t t-out="el[1]"/>
+          </option>
+        </t>
+      </select>
+    </div>
+  </t>
+
+  <!-- Estado Contrato -->
+  <t t-if="vista in ('contratos','recepciones','todo')">
+    <div class="col-md-3">
+      <label class="form-label" t-translation="on">Estado Contrato</label>
+      <select name="estado_contrato" class="form-select">
+        <option value="" t-translation="on">Todos</option>
+        <t t-foreach="estados_contrato" t-as="ec">
+          <option t-att-value="ec[0]"
+                  t-att-selected="'selected' if filtros.get('estado_contrato') == ec[0] else None">
+            <t t-out="ec[1]"/>
+          </option>
+        </t>
+      </select>
+    </div>
+  </t>
+
+  <!-- Botón -->
+  <div class="col-md-2 d-flex align-items-end">
+    <button type="submit" class="giudico-btn w-100" t-translation="on">Filtrar</button>
+  </div>
+</form>
+
+
+
+<!-- ======= Contratos ======= -->
+<t t-if="vista == 'contratos' or vista == 'todo'">
+  <h3 style="margin:12px 0; font-weight:600; color:#374151" t-translation="on"> Contratos</h3>
+  <div class="giudico-table-wrapper" style="margin-top:14px">
+    <table id="tabla_contratos" class="giudico-table">
+      <thead>
+        <tr><th t-translation="on">Contrato</th>
+          <th t-translation="on">Estado</th>
+          <th t-translation="on">Cant. Contratada</th></tr>
+      </thead>
+      <tbody>
+        <t t-foreach="contratos" t-as="c">
+          <tr>
+            <td><t t-out="c.name"/></td>
+            <td><t t-out="c.estado"/></td>
+            <td><t t-out="c.cantidad_total"/></td>
+          </tr>
+        </t>
+      </tbody>
+    </table>
+  </div>
+</t>
+
+<!-- ======= Campañas ======= -->
+<t t-if="vista == 'campanas' or vista == 'todo'">
+<h3 style="margin:12px 0; font-weight:600; color:#374151" t-translation="on"> Campañas</h3>
+  <div class="giudico-table-wrapper" style="margin-top:14px">
+
+    <table id="tabla_campanas" class="giudico-table">
+    <thead>
+     <tr><th t-translation="on">Campaña</th></tr>
+     </thead>
+      <tbody>
+        <t t-foreach="campanas" t-as="c">
+          <tr><td><t t-out="c.name"/></td></tr>
+        </t>
+      </tbody>
+    </table>
+  </div>
+</t>
+
+<!-- ======= Órdenes ======= -->
+<t t-if="vista == 'ordenes' or vista == 'todo'">
+<h3 style="margin:12px 0; font-weight:600; color:#374151" t-translation="on"> Ordenes</h3>
+  <div class="giudico-table-wrapper" style="margin-top:14px">
+    <table id="tabla_ordenes" class="giudico-table">
+      <thead>
+        <tr><th t-translation="on">Orden</th>
+          <th t-translation="on">Contrato</th>
+          <th t-translation="on">Cant. Ordenada</th>
+          </tr>
+      </thead>
+      <tbody>
+        <t t-foreach="ordenes" t-as="o">
+          <tr>
+            <td><t t-out="o.name"/></td>
+            <td><t t-out="o.contrato_id.name"/></td>
+            <td><t t-out="o.cantidad_mt"/></td>
+          </tr>
+        </t>
+      </tbody>
+    </table>
+  </div>
+</t>
+
+
+
+<!-- ======= Proveedores ======= -->
+<t t-if="vista == 'proveedores' or vista == 'todo'">
+<h3 style="margin:12px 0; font-weight:600; color:#374151" t-translation="on"> Proveedores</h3>
+  <div class="giudico-table-wrapper" style="margin-top:14px">
+    <table id="tabla_proveedores" class="giudico-table">
+      <thead><tr><th t-translation="on">Proveedor</th>
+          <th t-translation="on">Rango proveedor</th></tr></thead>
+      <tbody>
+        <t t-foreach="proveedores" t-as="p">
+          <tr>
+            <td><t t-out="p.name"/></td>
+            <td><t t-out="p.supplier_rank"/></td>
+          </tr>
+        </t>
+      </tbody>
+    </table>
+  </div>
+</t>
+
+ <t t-if="vista == 'recepciones' or vista == 'todo'">
+ <h3 style="margin:12px 0; font-weight:600; color:#374151" t-translation="on"> Recepciones</h3>
+  <div class="giudico-table-wrapper">
+    <table id="tabla_provision" class="giudico-table">
+      <thead>
+        <tr>
+          <th t-translation="on">Contrato</th>
+          <th t-translation="on">Estado Contrato</th>
+          <th t-translation="on">Orden</th>
+          <th t-translation="on">Recepción</th>
+          <th t-translation="on">Estado Recepción</th>
+          <th t-translation="on">Lote</th>
+          <th t-translation="on">Estado Lote</th>
+          <th t-translation="on">Campaña</th>
+          <th t-translation="on">Proveedor</th>
+          <th t-translation="on">Producto</th>
+          <th t-translation="on">Cant. Contratada</th>
+          <th t-translation="on">Cant. Ordenada</th>
+          <th t-translation="on">Cant. Recibida</th>
+          <th t-translation="on">Peso Neto</th>
+          <th t-translation="on">Merma</th>
+          <t t-if="request.env.user.has_group('base.group_system')">
+            <th t-translation="on">Costo Total</th>
+            <th t-translation="on">Margen (%)</th>
+            <th t-translation="on">Desviación (%)</th>
+          </t>
+        </tr>
+      </thead>
+    
+
+
+      <tbody>
+                <t t-foreach="recepciones" t-as="r">
+                  <tr>
+                    <td><t t-out="r.orden_id.contrato_id.name"/></td>
+                    <td><t t-out="r.orden_id.contrato_id.estado"/></td>
+                    <td><t t-out="r.orden_id.name"/></td>
+                    <td><t t-out="r.name"/></td>
+                    <td><t t-out="r.estado"/></td>
+                    <td><t t-out="r.lote_id.name"/></td>
+                    <td><t t-out="r.lote_id.estado"/></td>
+                    <td><t t-out="r.campana_id.name"/></td>
+                    <td><t t-out="r.proveedor_id.name"/></td>
+                    <td><t t-out="r.producto"/></td>
+                    <td><t t-out="r.orden_id.contrato_id.cantidad_total"/></td>
+                    <td><t t-out="r.orden_id.cantidad_mt"/></td>
+                    <td><t t-out="r.cantidad"/></td>
+                    <td><t t-out="r.peso_neto"/></td>
+                    <td><t t-out="r.merma"/></td>
+<t t-if="request.env.user.has_group('base.group_system')">
+                    <td><t t-out="'%.4f' % (r.costo_total or 0)"/></td>
+                    <td><t t-out="r.margen"/></td>
+                    <td><t t-out="r.desviacion"/></td>
+</t>
+          </tr>
+        </t>
+      </tbody>
+      <tfoot>
+                <tr class="fw-bold">
+                  <td colspan="10" style="text-align:right" t-translation="on">Totales:</td>
+                  <td style="text-align:right"><t t-out="totales['contratado']"/></td>
+                  <td style="text-align:right"><t t-out="totales['ordenado']"/></td>
+                  <td style="text-align:right"><t t-out="totales['recibido']"/></td>
+                  <td style="text-align:right"><t t-out="totales['peso']"/></td>
+                  <td style="text-align:right"><t t-out="totales['merma']"/></td>
+<t t-if="request.env.user.has_group('base.group_system')">
+                  <td style="text-align:right"><t t-out="totales['costo']"/></td>
+                  <td style="text-align:right"><t t-out="totales['margen']"/> %</td>
+                  <td style="text-align:right"><t t-out="totales['desviacion']"/> %</td>
+ </t>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+         
+ <!-- CHARTS -->
+<div class="charts-card">
+  <div class="row">
+    <div class="col-md-6">
+      <h5 class="chart-title" t-translation="on">📊 Avance por Proveedor</h5>
+      <canvas id="chart_avance"></canvas>
+    </div>
+    <div class="col-md-6">
+      <h5 class="chart-title" t-translation="on">📊 Contratos por Estado</h5>
+      <canvas id="chartContratosEstado"></canvas>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-md-6">
+      <h5 class="chart-title" t-translation="on">📊 Contratado vs Recibido por Campaña</h5>
+      <canvas id="chartCampana"></canvas>
+    </div>
+    <div class="col-md-6">
+      <h5 class="chart-title" t-translation="on">📊 MT y Merma por Proveedor</h5>
+      <canvas id="chartProveedor"></canvas>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-md-6">
+      <h5 class="chart-title" t-translation="on">📊 Evolución Mensual</h5>
+      <canvas id="chartMes"></canvas>
+    </div>
+    <div class="col-md-6">
+      <h5 class="chart-title" t-translation="on">📊 Distribución de Merma</h5>
+      <canvas id="chartMerma"></canvas>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <h5 class="chart-title" t-translation="on">📊 Cumplimiento por Campaña</h5>
+      <canvas id="chartCumplimientoCampana"></canvas>
+    </div>
+  </div>
+</div>
+
+
+
+
+</t>
+ </div> <!-- cierre de .g-content -->
+      </div>   <!-- cierre de .g-main-wrap -->
+      <!-- JS -->
+      <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  $(document).ready(function () {
+    // DataTables seguros por vista
+    if ($('#tabla_provision').length)   $('#tabla_provision').DataTable({ pageLength: 25, order: [], language: { url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json" }});
+    if ($('#tabla_contratos').length)   $('#tabla_contratos').DataTable({ pageLength: 25, order: [], language: { url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json" }});
+    if ($('#tabla_campanas').length)    $('#tabla_campanas').DataTable({ pageLength: 25, order: [], language: { url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json" }});
+    if ($('#tabla_ordenes').length)     $('#tabla_ordenes').DataTable({ pageLength: 25, order: [], language: { url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json" }});
+    if ($('#tabla_proveedores').length) $('#tabla_proveedores').DataTable({ pageLength: 25, order: [], language: { url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json" }});
+
+    const labelCantidadRecibida = "Cantidad Recibida";
+    const labelContratadoMT     = "Contratado (MT)";
+    const labelRecibidoMT       = "Recibido (MT)";
+    const labelMTRecibidos      = "MT recibidos";
+    const labelCostoTotal       = "Costo total";
+    const labelMerma            = "Merma";
+
+    const porCampana   = <t t-out="por_campana_chart"/>;
+    const porProveedor = <t t-out="por_proveedor_chart"/>;
+    const porMes       = <t t-out="por_mes_chart"/>;
+
+    // Avance por proveedor
+    const elAvance = document.getElementById('chart_avance');
+    if (elAvance) {
+      const ctxAvance = elAvance.getContext('2d');
+      new Chart(ctxAvance, {
+        type: 'bar',
+        data: {
+          labels: [<t t-foreach="recepciones" t-as="r">'<t t-out="r.proveedor_id.name"/>',</t>],
+          datasets: [{
+            label: labelCantidadRecibida,
+            data: [<t t-foreach="recepciones" t-as="r"><t t-out="r.cantidad"/>,</t>],
+            backgroundColor: '#16a34a'
+          }]
+        },
+        options: {
+          plugins: {
+            title: { display: true, text: 'Avance por Proveedor', font: { size: 16, weight: 'bold' }},
+            legend: { display: false }
+          }
+        }
+      });
+    }
+
+    // Por campaña
+    const elCampana = document.getElementById("chartCampana");
+    if (elCampana) {
+      const ctxCampana = elCampana.getContext('2d');
+      new Chart(ctxCampana, {
+        type: 'bar',
+        data: {
+          labels: porCampana.labels,
+          datasets: [
+            { label: labelContratadoMT, data: porCampana.contratado, backgroundColor: '#2563eb' },
+            { label: labelRecibidoMT,   data: porCampana.recibido,   backgroundColor: '#16a34a' }
+          ]
+        },
+        options: {
+          plugins: {
+            title: { display: true, text: 'Contratado vs Recibido por Campaña', font: { size: 16, weight: 'bold' }},
+            legend: { position: 'bottom' }
+          }
+        }
+      });
+    }
+
+    // Por proveedor
+    const elProveedor = document.getElementById("chartProveedor");
+    if (elProveedor) {
+      const ctxProveedor = elProveedor.getContext('2d');
+      new Chart(ctxProveedor, {
+        type: 'bar',
+        data: {
+          labels: porProveedor.labels,
+          datasets: [
+            { label: labelMTRecibidos, data: porProveedor.mt,    backgroundColor: '#2563eb' },
+            { label: labelMerma,       data: porProveedor.merma, backgroundColor: '#dc2626' }
+          ]
+        },
+        options: {
+          indexAxis: 'y',
+          plugins: {
+            title: { display: true, text: 'MT y Merma por Proveedor', font: { size: 16, weight: 'bold' }},
+            legend: { position: 'bottom' }
+          }
+        }
+      });
+    }
+
+    // Por mes
+    const elMes = document.getElementById("chartMes");
+    if (elMes) {
+      const ctxMes = elMes.getContext('2d');
+      new Chart(ctxMes, {
+        type: 'line',
+        data: {
+          labels: porMes.labels,
+          datasets: [
+            { label: labelMTRecibidos, data: porMes.mt,    borderColor: '#16a34a', fill: false },
+            { label: labelCostoTotal,  data: porMes.costo, borderColor: '#ea580c', fill: false }
+          ]
+        },
+        options: {
+          plugins: {
+            title: { display: true, text: 'MT Recibidos y Costos por Mes', font: { size: 16, weight: 'bold' }},
+            legend: { position: 'bottom' }
+          }
+        }
+      });
+    }
+
+    // Merma (doughnut)
+ 
+const elMerma = document.getElementById("chartMerma");
+if (elMerma) {
+  const ctxMerma = elMerma.getContext('2d');
+
+   if (porProveedor.merma &amp;&amp; porProveedor.merma.length &gt; 0 &amp;&amp; porProveedor.merma.some(v =&gt; v &gt; 0)) {
+    new Chart(ctxMerma, {
+      type: 'doughnut',
+      data: {
+        labels: porProveedor.labels,
+        datasets: [{
+          label: labelMerma,
+          data: porProveedor.merma,
+          backgroundColor: [
+            '#16a34a', '#2563eb', '#dc2626', '#f59e0b', '#9333ea', '#06b6d4'
+          ] // colores fuertes y corporativos
+        }]
+      },
+      options: {
+        plugins: {
+          legend: { position: 'bottom' },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return `${context.label}: ${context.raw.toFixed(2)} MT`;
+              }
+            }
+          }
+        }
+      }
+    });
+  } else {
+    // Mostrar un mensaje si no hay datos
+    ctxMerma.font = "9px Arial";
+    ctxMerma.fillText("Sin datos", 50, 50);
+  }
+}
+
+
+    // Contratos por estado (doughnut)
+    const contratosEstado = <t t-out="contratos_estado_chart"/>;
+    const elContratosEstado = document.getElementById("chartContratosEstado");
+    if (elContratosEstado) {
+      new Chart(elContratosEstado, {
+        type: 'doughnut',
+        data: {
+          labels: contratosEstado.labels,
+          datasets: [{
+            data: contratosEstado.valores,
+            backgroundColor: ['#dc2626','#16a34a','#2563eb']
+          }]
+        },
+        options: {
+          plugins: {
+            title: { display: true, text: 'Contratos por Estado', font: { size: 16, weight: 'bold' }},
+            legend: { position: 'bottom' }
+          }
+        }
+      });
+    }
+
+    // Cumplimiento por campaña
+    const cumplimientoCampana = <t t-out="cumplimiento_campana"/>;
+    const elCumplimiento = document.getElementById("chartCumplimientoCampana");
+    if (elCumplimiento) {
+      new Chart(elCumplimiento, {
+        type: 'bar',
+        data: {
+          labels: cumplimientoCampana.labels,
+          datasets: [{
+            label: "Cumplimiento (%)",
+            data: cumplimientoCampana.porcentajes,
+            backgroundColor: '#16a34a'
+          }]
+        },
+        options: {
+          scales: {
+            y: { beginAtZero: true, max: 120 }
+          },
+          plugins: {
+            title: { display: true, text: 'Cumplimiento de Campañas', font: { size: 16, weight: 'bold' }},
+            legend: { display: false }
+          }
+        }
+      });
+    }
+  });
+</script>
+
+
+    </t>
+  </template>
+</odoo>

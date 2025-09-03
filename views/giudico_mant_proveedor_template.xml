@@ -1,0 +1,115 @@
+<odoo>
+  <template id="giudico_mant_proveedor_template" name="Giudico - Crear/Editar Proveedor">
+    <t t-call="web.layout">
+      <t t-call-assets="web.assets_frontend" t-js="false"/>
+      <t t-call="feedbio_provision_custom.giudico_lang_buttons"/>
+      <style>
+        .g-main-wrap{position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;overflow:hidden}
+        .g-bg{position:absolute;inset:0;background-image:url('/feedbio_provision_custom/static/src/img/backgroundweb.png');background-size:cover;background-position:center;background-repeat:no-repeat;transform:scale(1.02);filter:saturate(1.05)}
+        .g-overlay{position:absolute;inset:0;background:radial-gradient(ellipse at center, rgba(0,0,0,.15), rgba(0,0,0,.35))}
+        .g-frame{position:absolute;inset:12px;border-radius:16px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);pointer-events:none}
+        .g-content{position:relative;z-index:2;width:100%;max-width:800px;padding:28px 20px 48px;text-align:center}
+        .g-logo{height:clamp(100px,20vw,200px);object-fit:contain;margin:0 auto 12px;display:block;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))}
+        .g-title{font-size:clamp(20px,2.4vw,28px);letter-spacing:.5px;color:#fff;font-weight:600;text-shadow:0 2px 6px rgba(3,42,9,.45);margin:0 0 22px}
+        .g-form{background:rgba(255,255,255,.06);backdrop-filter:blur(2px);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:18px;box-shadow:0 8px 18px rgba(0,0,0,.18);text-align:left}
+        .g-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+        @media(max-width:760px){.g-row{grid-template-columns:1fr}}
+        .g-field{display:flex;flex-direction:column;gap:6px}
+        .g-label{color:#fff;font-weight:600}
+        .g-input{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.9)}
+        .giudico-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:#16a34a;color:#fff;padding:12px 18px;border-radius:12px;text-decoration:none;font-weight:700;letter-spacing:.3px;border:1px solid rgba(255,255,255,.14)}
+        .giudico-btn:hover{background:#15803d}
+        .g-actions{display:flex;gap:10px;justify-content:center;margin-top:14px}
+        .g-hint{margin:10px 0 0;color:#fff}
+               .giudico-btn-secondary2 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background:#374151;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:700;
+  border:1px solid rgba(255,255,255,.14);
+  transition:.2s;
+}
+.giudico-btn-secondary2:hover { background:#1f2937; }
+        </style>
+
+
+      <div class="g-main-wrap">
+        <div class="g-bg"></div><div class="g-overlay"></div><div class="g-frame"></div>
+        <div class="g-content">
+          <img src="/feedbio_provision_custom/static/src/img/LogoGiudico.png" alt="Giudico" class="g-logo"/>
+          <h2 class="g-title">
+            <t t-translation="on">
+              <t t-if="proveedor">🏭 Editar Proveedor</t>
+              <t t-else="">🏭 Crear Proveedor</t>
+            </t>
+          </h2>
+
+<form class="g-form"
+      t-att-action="'/giudico/mantenimiento/proveedor/update/%d' % proveedor.id if proveedor else '/giudico/mantenimiento/proveedor/create'"
+      method="post">
+  <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+  <div class="g-row">
+    <!-- Código (solo en edición) -->
+    <t t-if="proveedor">
+      <div class="g-field">
+        <label for="fld_ref" class="g-label" t-translation="on">Código proveedor</label>
+        <input id="fld_ref"
+               class="g-input"
+               type="text"
+               readonly="readonly"
+              t-att-value="proveedor.ref"/>
+      </div>
+    </t>
+
+    <!-- Nombre -->
+    <div class="g-field">
+      <label for="fld_name" class="g-label" t-translation="on">Nombre proveedor</label>
+      <input id="fld_name" class="g-input" type="text" name="name"
+             
+             required="required"
+             t-att-value="proveedor.name if proveedor else ''"/>
+    </div>
+  </div>
+
+  <div class="g-row">
+    <!-- Teléfono -->
+    <div class="g-field">
+      <label for="fld_phone" class="g-label" t-translation="on">Teléfono</label>
+      <input id="fld_phone" class="g-input" type="text" name="phone"
+            
+             t-att-value="proveedor.phone if proveedor and proveedor.partner_id else ''"/>
+    </div>
+
+    <!-- Email -->
+    <div class="g-field">
+      <label for="fld_email" class="g-label" t-translation="on">Email</label>
+      <input id="fld_email" class="g-input" type="email" name="email"
+            
+             t-att-value="proveedor.email if proveedor and proveedor.partner_id else ''"/>
+    </div>
+  </div>
+
+  <p class="g-hint" t-translation="on">
+    <t t-if="proveedor">Edita la información y guarda para actualizar el proveedor.</t>
+    <t t-else="">El código se asigna automáticamente y no se puede modificar.</t>
+  </p>
+
+  <div class="g-actions">
+    <button type="submit" class="giudico-btn">
+      <t t-translation="on"><t t-if="proveedor">Actualizar</t><t t-else="">Guardar</t></t>
+    </button>
+    <a href="/giudico/mantenimiento/proveedores" class="giudico-btn" t-translation="on">Volver</a>
+  </div>
+</form>
+
+        </div>
+      </div>
+    </t>
+  </template>
+</odoo>

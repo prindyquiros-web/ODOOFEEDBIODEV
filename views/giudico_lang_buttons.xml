@@ -1,0 +1,42 @@
+<odoo>
+  <template id="giudico_lang_buttons">
+    <div style="position:absolute; top:20px; right:20px; display:flex; gap:8px; z-index:10">
+      <a class="giudico-btn-secondary g-set-lang" data-lang="es_CR" href="#">ES</a>
+      <a class="giudico-btn-secondary g-set-lang" data-lang="en_USA" href="#">EN</a>
+      <a class="giudico-btn-secondary g-set-lang" data-lang="fr_FR" href="#">FR</a>
+    </div>
+
+<script type="text/javascript">
+(function() {
+  function withLangPrefix(lang) {
+    var parts = window.location.pathname.replace(/^\/+/, '').split('/');
+    var KNOWN = ['es_CR', 'en_USA', 'fr_FR'];
+
+    // quitar prefijo si ya está
+    if (KNOWN.includes(parts[0])) {
+      parts.shift();
+    }
+
+    // 🚨 Inglés: prefijo + querystring
+    if (lang === 'en_US') {
+      return '/en_US/' + parts.join('/') + '?lang=en_US';
+    }
+
+    // Español y francés: solo prefijo
+    return '/' + lang + '/' + parts.join('/');
+  }
+
+  document.querySelectorAll('.g-set-lang').forEach(function(a){
+    a.addEventListener('click', function(ev){
+      ev.preventDefault();
+      var lang = a.getAttribute('data-lang');
+      window.location.href = withLangPrefix(lang);
+    });
+  });
+})();
+</script>
+
+
+
+  </template>
+</odoo>

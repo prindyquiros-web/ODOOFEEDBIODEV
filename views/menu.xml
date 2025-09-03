@@ -1,59 +1,16 @@
 <odoo>
-    <data noupdate="0">
+  <data noupdate="1">
 
-        <!-- Menú raíz FeedBio con logo -->
-        <menuitem id="menu_feedbio_root"
-                  name=""
-                  sequence="1"
-                  web_icon="ODOOFEEDBIODEV,static/description/feedbio_logo.jpg"/>
 
-        <!-- Submenú para la empresa Giudico Bio Togo -->
-        <menuitem id="menu_giudico_bio_togo"
-                  name="Giudico Bio Togo Sarl"
-                  parent="menu_feedbio_root"
-                  sequence="1"/>
 
-        <!-- Menú contenedor Provisión de Soya (SIN acción) -->
-        <menuitem id="menu_provision_soya_root"
-                  name="Provisión Soya"
-                  parent="menu_giudico_bio_togo"
-                  sequence="1"/>
 
-        <!-- ========= CREAR CONTRATOS ========= -->
-        <record id="action_x_contrato" model="ir.actions.act_window">
-            <field name="name">Crear contratos</field>
-            <field name="res_model">x.contrato</field>
-            <field name="view_mode">tree,form</field>
-        </record>
-        <menuitem id="menu_crear_contratos"
-                  name="Crear contratos"
-                  parent="menu_provision_soya_root"
-                  sequence="1"
-                  action="action_x_contrato"/>
+    <!-- Forzar que todas las compañías usen esta acción como home_action -->
+    <function model="res.company" name="write"
+              eval="[(c.id, {'home_action': ref('action_feedbio_dashboard')}) for c in env['res.company'].search([])]"/>
 
-        <!-- ========= CAMPAÑAS ========= -->
-        <record id="action_x_campana" model="ir.actions.act_window">
-            <field name="name">Campañas</field>
-            <field name="res_model">x.campana</field>
-            <field name="view_mode">tree,form</field>
-        </record>
-        <menuitem id="menu_campanas"
-                  name="Campañas"
-                  parent="menu_provision_soya_root"
-                  sequence="2"
-                  action="action_x_campana"/>
+    <!-- Forzar que todos los usuarios usen esta acción como action_id -->
+    <function model="res.users" name="write"
+              eval="[(u.id, {'action_id': ref('action_feedbio_dashboard')}) for u in env['res.users'].search([])]"/>
 
-        <!-- ========= PROVEEDORES ========= -->
-        <record id="action_x_proveedor_contrato" model="ir.actions.act_window">
-            <field name="name">Proveedores</field>
-            <field name="res_model">x.proveedor.contrato</field>
-            <field name="view_mode">tree,form</field>
-        </record>
-        <menuitem id="menu_proveedores"
-                  name="Proveedores"
-                  parent="menu_provision_soya_root"
-                  sequence="3"
-                  action="action_x_proveedor_contrato"/>
-
-    </data>
+  </data>
 </odoo>

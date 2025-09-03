@@ -1,0 +1,25 @@
+<odoo>
+    <!-- Acción para crear una campaña -->
+    <record id="action_create_campana" model="ir.actions.act_window">
+        <field name="name">Crear Campaña</field> <!-- traducible automáticamente -->
+        <field name="res_model">x.campana</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+        <field name="context">{'form_view_initial_mode': 'edit'}</field>
+    </record>
+
+    <!-- Acción para crear un proveedor -->
+    <record id="action_create_proveedor" model="ir.actions.act_window">
+        <field name="name">Crear Proveedor</field> <!-- traducible automáticamente -->
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+        <field name="context">
+            {
+              'default_supplier_rank': 1,
+              'form_view_initial_mode': 'edit'
+            }
+        </field>
+    </record>
+    
+</odoo>

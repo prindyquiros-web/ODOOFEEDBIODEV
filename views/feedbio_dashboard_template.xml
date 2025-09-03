@@ -1,0 +1,162 @@
+<odoo>
+    <data>
+        <template id="feedbio_dashboard_template" name="FeedBio Dashboard">
+            <t t-call="web.layout">
+            <t t-call="feedbio_provision_custom.giudico_lang_buttons"/>
+                <div class="dashboard-container">
+
+                    <img src="/feedbio_provision_custom/static/src/img/LogoFeedbio2.png" 
+                         alt="Logo FeedBio" class="main-logo"/>
+
+                    <h1 class="dashboard-title" t-translation="on">Selecciona una Empresa</h1>
+
+                    <div class="companies-grid">
+                        <t t-foreach="companies" t-as="company">
+                            <div class="company-card">
+                                <img t-att-src="company.name == 'Giudico Bio Togo Sarl' 
+                                    and '/feedbio_provision_custom/static/src/img/LogoGiudico.png' 
+                                    or ('/web/image/res.company/%s/logo' % company.id)" 
+                                    alt="Logo Empresa" class="company-logo"/>
+
+                                <span class="company-name">
+                                    <t t-out="company.name"/>
+                                </span>
+
+                                <t t-if="company.name == 'Giudico Bio Togo Sarl'">
+                                    <a href="/giudico/menu" class="company-btn" t-translation="on">Entrar</a>
+                                </t>
+                                <t t-else="">
+                                    <a t-att-href="'/feedbio/select_company/%s' % company.id" class="company-btn" t-translation="on">Entrar</a>
+                                </t>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </t>
+
+<style>
+/* Fondo a pantalla completa */
+.main-logo {
+    max-height: 300px;
+    object-fit: contain;
+    display: block;
+    margin: 0px auto 0px;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.25));
+}
+
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 50px;
+    min-height: 100vh;
+    background-image: url('/feedbio_provision_custom/static/src/img/backgroundweb.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* Título */
+.dashboard-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #06832aff;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+    margin-bottom: 25px;
+}
+
+/* Grid de empresas */
+.companies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 1000px;
+    padding: 0 20px;
+}
+
+/* Tarjeta de empresa */
+.company-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+.company-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Logo de empresa */
+.company-logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+/* Nombre de empresa */
+.company-name {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+    color: #34495e;
+}
+
+/* Botón */
+.company-btn {
+    background-color: #28a745;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+.company-btn:hover {
+    background-color: #218838;
+}
+
+/* Forzar que Odoo no deje márgenes alrededor */
+.o_action_manager,
+.o_content,
+.o_view_manager_content,
+.o_view_controller,
+.o_action,
+.o_widget,
+.o_web_client .o_container,
+.o_web_client .o_content,
+.o_web_client .o_main_content {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+}
+.giudico-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background:#374151;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:700;
+  border:1px solid rgba(255,255,255,.14);
+  transition:.2s;
+}
+.giudico-btn-secondary:hover { background:#1f2937; }
+</style>
+
+        </template>
+            <!-- Botones de cambio de idioma -->
+    <template id="feedbio_lang_buttons_same_url"
+              inherit_id="feedbio_provision_custom.feedbio_dashboard_template">
+      <xpath expr="//div[@class='dashboard-container']" position="inside">
+   
+      </xpath>
+    </template>
+    </data>
+</odoo>

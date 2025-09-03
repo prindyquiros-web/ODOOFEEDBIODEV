@@ -1,0 +1,124 @@
+<odoo>
+    <record id="paperformat_contrato" model="report.paperformat">
+        <field name="name">Contrato sin margen</field>
+        <field name="format">A4</field>
+        <field name="margin_top">5</field>
+        <field name="margin_bottom">10</field>
+        <field name="margin_left">10</field>
+        <field name="margin_right">10</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="orientation">Portrait</field>
+    </record>
+
+    <template id="report_contrato_pdf_template">
+        <t t-call="web.external_layout">
+
+            <!-- HEADER -->
+            <div style="display:flex;align-items:center;border-bottom:2px solid #28a745;padding:10px 0;">
+                <div style="flex:1;">
+                    <img t-att-src="'data:image/png;base64,%s' % logo_giudico" style="max-height:80px;"/>
+                </div>
+                <div style="flex:3;text-align:right;">
+                    <h1 style="margin:0;font-size:24px;color:#28a745;" t-translation="on" t-options='{"name": "titulo_contrato"}'>CONTRATO</h1>
+                    <p style="margin:0;font-size:12px;color:#666;" t-translation="on" t-options='{"name": "subtitulo_contrato"}'>Documento generado por el sistema FeedBio</p>
+                </div>
+            </div>
+
+            <!-- CONTENIDO -->
+            <main class="o_main">
+                <div class="page" style="font-family:Arial, sans-serif;font-size:13px;">
+
+                    <t t-foreach="docs" t-as="doc">
+                        <!-- INFORMACIÓN GENERAL -->
+                        <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+                            <tbody>
+                                <tr>
+                                    <td style="padding:6px;font-weight:bold;width:25%;background:#f8f8f8;" t-translation="on" t-options='{"name": "campo_referencia"}'>Referencia:</td>
+                                    <td style="padding:6px;"><t t-out="doc.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:6px;font-weight:bold;background:#f8f8f8;" t-translation="on" t-options='{"name": "campo_vendedor"}'>Vendedor:</td>
+                                    <td style="padding:6px;"><t t-out="doc.proveedor_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:6px;font-weight:bold;background:#f8f8f8;" t-translation="on" t-options='{"name": "campo_comprador"}'>Comprador:</td>
+                                    <td style="padding:6px;"><t t-out="doc.buyer"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:6px;font-weight:bold;background:#f8f8f8;" t-translation="on" t-options='{"name": "campo_producto"}'>Producto:</td>
+                                    <td style="padding:6px;"><t t-out="doc.producto.display_name"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:6px;font-weight:bold;background:#f8f8f8;" t-translation="on" t-options='{"name": "campo_cantidad"}'>Cantidad Total (Ton):</td>
+                                    <td style="padding:6px;"><t t-out="doc.cantidad_total"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:6px;font-weight:bold;background:#f8f8f8;" t-translation="on" t-options='{"name": "campo_precio"}'>Precio Estimado:</td>
+                                    <td style="padding:6px;"><t t-out="doc.precio"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:6px;font-weight:bold;background:#f8f8f8;" t-translation="on" t-options='{"name": "campo_campana"}'>Campaña:</td>
+                                    <td style="padding:6px;"><t t-out="doc.campana_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:6px;font-weight:bold;background:#f8f8f8;" t-translation="on" t-options='{"name": "campo_periodo"}'>Periodo de Entrega:</td>
+                                    <td style="padding:6px;"><t t-out="doc.periodo_entrega"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:6px;font-weight:bold;background:#f8f8f8;" t-translation="on" t-options='{"name": "campo_lugar"}'>Lugar de Entrega:</td>
+                                    <td style="padding:6px;"><t t-out="doc.lugar_entrega"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:6px;font-weight:bold;background:#f8f8f8;" t-translation="on" t-options='{"name": "campo_pago"}'>Forma de Pago:</td>
+                                    <td style="padding:6px;"><t t-out="doc.forma_pago"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- TEXTO DEL CONTRATO -->
+                        <p t-translation="on" t-options='{"name": "texto_introduccion"}'>
+                            Este contrato se celebra entre <strong><t t-out="doc.proveedor_id.name"/></strong> y <strong><t t-out="doc.buyer"/></strong>,
+                            para la provisión de <t t-out="doc.producto.display_name"/> según los términos y condiciones establecidos.
+                        </p>
+
+                        <h3 style="margin-top:15px;margin-bottom:8px;color:#28a745;" t-translation="on" t-options='{"name": "campo_observaciones"}'>Observaciones</h3>
+                        <div style="border:1px solid #ccc;padding:8px;min-height:50px;">
+                            <t t-out="doc.observaciones"/>
+                        </div>
+
+                        <!-- FIRMAS -->
+                        <div style="margin-top:50px;">
+                            <table style="width:100%;text-align:center;">
+                                <tr>
+                                    <td>
+                                        ___________________________<br/>
+                                        <strong t-translation="on" t-options='{"name": "firma_vendedor"}'>Vendedor</strong>
+                                    </td>
+                                    <td>
+                                        ___________________________<br/>
+                                        <strong t-translation="on" t-options='{"name": "firma_comprador"}'>Comprador</strong>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </t>
+
+                    <!-- PIE -->
+                    <div style="margin-top:30px;font-size:11px;color:#666;text-align:center;" t-translation="on" t-options='{"name": "pie_pagina"}'>
+                        Documento generado automáticamente 
+                    </div>
+                </div>
+            </main>
+        </t>
+    </template>
+
+    <record id="report_contrato_pdf_action" model="ir.actions.report">
+        <field name="name">Contrato</field>
+        <field name="model">x.contrato</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">feedbio_provision_custom.report_contrato_pdf_template</field>
+        <field name="print_report_name">'Contrato-%s' % (object.name)</field>
+        <field name="paperformat_id" ref="feedbio_provision_custom.paperformat_contrato"/>
+    </record>
+</odoo>

@@ -1,0 +1,74 @@
+
+<odoo>
+<!--  ========== Raíz de menú de la app (top-level) ==========  -->
+<menuitem id="menu_feedbio_root" name="FeedBio" sequence="10" action="feedbio_provision_custom.action_feedbio_dashboard"/>
+<!--  ========== Campañas ==========  -->
+<record id="action_x_campana" model="ir.actions.act_window">
+<field name="name">Campañas</field>
+<field name="res_model">x.campana</field>
+<field name="view_mode">tree,form</field>
+<field name="help" type="html">
+<p>Importa campañas con Favoritos → Importar registros.</p>
+</field>
+</record>
+<menuitem id="menu_x_campana" name="Campañas" parent="menu_feedbio_root" action="action_x_campana" sequence="10"/>
+<!--  ========== Contratos ==========  -->
+<record id="action_x_contrato" model="ir.actions.act_window">
+<field name="name">Contratos</field>
+<field name="res_model">x.contrato</field>
+<field name="view_mode">tree,form</field>
+</record>
+<menuitem id="menu_x_contrato" name="Contratos" parent="menu_feedbio_root" action="action_x_contrato" sequence="20"/>
+<!--  Adendas de contrato  -->
+<record id="action_x_contrato_adenda" model="ir.actions.act_window">
+<field name="name">Adendas</field>
+<field name="res_model">x.contrato_adenda</field>
+<field name="view_mode">tree,form</field>
+</record>
+<menuitem id="menu_x_contrato_adenda" name="Adendas" parent="menu_feedbio_root" action="action_x_contrato_adenda" sequence="25"/>
+<!--  Relación Proveedor ↔ Contrato  -->
+<record id="action_x_proveedor_contrato" model="ir.actions.act_window">
+<field name="name">Proveedor–Contrato</field>
+<field name="res_model">x_proveedor_contrato</field>
+<field name="view_mode">tree,form</field>
+</record>
+<menuitem id="menu_x_proveedor_contrato" name="Proveedor–Contrato" parent="menu_feedbio_root" action="action_x_proveedor_contrato" sequence="30"/>
+<!--  ========== Lotes ==========  -->
+<record id="action_x_lote" model="ir.actions.act_window">
+<field name="name">Lotes</field>
+<field name="res_model">x_lote</field>
+<field name="view_mode">tree,form</field>
+</record>
+<menuitem id="menu_x_lote" name="Lotes" parent="menu_feedbio_root" action="action_x_lote" sequence="40"/>
+<!--  **NOTA**: x_lote_res_partner_rel es una tabla rel (no modelo) -> no puede tener acción/menú.  -->
+<!--  ========== Recepciones ==========  -->
+<record id="action_x_recepcion" model="ir.actions.act_window">
+<field name="name">Recepciones</field>
+<field name="res_model">x.recepcion</field>
+<field name="view_mode">tree,form</field>
+</record>
+<menuitem id="menu_x_recepcion" name="Recepciones" parent="menu_feedbio_root" action="action_x_recepcion" sequence="50"/>
+<!--  Documentos de recepción (boletas)  -->
+<record id="action_x_recepcion_documento" model="ir.actions.act_window">
+<field name="name">Documentos de Recepción</field>
+<field name="res_model">x.recepcion.documento</field>
+<field name="view_mode">tree,form</field>
+</record>
+<menuitem id="menu_x_recepcion_documento" name="Documentos de Recepción" parent="menu_feedbio_root" action="action_x_recepcion_documento" sequence="60"/>
+<!--  ========== Órdenes de pedido (opcionales) ==========  -->
+<record id="action_x_orden_pedido" model="ir.actions.act_window">
+<field name="name">Órdenes de Pedido</field>
+<field name="res_model">x.orden_pedido</field>
+<field name="view_mode">tree,form</field>
+</record>
+<menuitem id="menu_x_orden_pedido" name="Órdenes de Pedido" parent="menu_feedbio_root" action="action_x_orden_pedido" sequence="70"/>
+<record id="action_x_recepcion_pedido" model="ir.actions.act_window">
+<field name="name">Recepción–Pedido</field>
+<field name="res_model">x.recepcion</field>
+<field name="view_mode">tree,form</field>
+</record>
+<menuitem id="menu_x_recepcion_pedido" name="Recepción–Pedido" parent="menu_feedbio_root" action="action_x_recepcion_pedido" sequence="80"/>
+<record id="base.main_company" model="res.company">
+<field name="home_action" ref="feedbio_provision_custom.action_feedbio_dashboard"/>
+</record>
+</odoo>

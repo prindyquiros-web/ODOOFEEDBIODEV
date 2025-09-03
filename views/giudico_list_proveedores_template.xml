@@ -1,0 +1,217 @@
+<odoo>
+  <template id="giudico_list_proveedores_template" name="Lista de Proveedores Giudico">
+    <t t-call="web.layout">
+      <t t-call-assets="web.assets_frontend" t-js="true"/>
+<t t-call="feedbio_provision_custom.giudico_lang_buttons"/>
+      <style>
+    html, body {
+  height: 100%;
+  margin: 0;
+  overflow-y: auto;   /* scroll vertical global */
+}
+
+.g-main-wrap {
+  position: relative;
+  min-height: 100vh;
+  display: block;     /* ya no flex centrado */
+  padding: 20px 0;
+  overflow: visible;  /* deja crecer el contenido */
+}
+
+/* === Fondo fijo === */
+.g-bg,
+.g-overlay,
+.g-frame {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.g-bg {
+  background-image: url('/feedbio_provision_custom/static/src/img/backgroundweb.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transform: scale(1.02);
+  filter: saturate(1.05);
+}
+
+.g-overlay {
+  background: radial-gradient(ellipse at center, rgba(0,0,0,.15), rgba(0,0,0,.35));
+}
+
+.g-frame {
+  inset: 12px;
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+}
+
+/* === Contenido === */
+.g-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1200px;
+  padding: 28px 20px 48px;
+  margin: 0 auto;   /* ✅ centra horizontalmente */
+}
+
+/* === Caja central === */
+.lotes-container {
+  background: rgba(255,255,255,0.95);
+  border-radius: 14px;
+  padding: 25px 35px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.lotes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.lotes-header h2 {
+  color: #16a34a;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Logo */
+.g-logo {
+  height: clamp(80px, 15vw, 140px);
+  object-fit: contain;
+  margin: 0 auto 20px;
+  display: block;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,.25));
+}
+
+/* Botones */
+.giudico-btn {
+  background-color: #16a34a;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: bold;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(0,0,0,.15);
+  transition: all .2s ease;
+}
+.giudico-btn:hover { background-color: #15803d; transform: translateY(-2px); }
+
+.giudico-btn1 {
+  background-color: #6b7280;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: bold;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,.15);
+  transition: all .2s ease;
+}
+.giudico-btn1:hover { background-color: #4b5563; transform: translateY(-2px); }
+
+/* Tabla */
+.giudico-table-wrapper { overflow-x: auto; }
+.giudico-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #111;
+}
+.giudico-table th, .giudico-table td {
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  text-align: left;
+}
+.giudico-table th { background: #f8f9fa; font-weight: 600; }
+.giudico-table tr:hover td { background: #f3f4f6; }
+
+/* Acciones */
+.edit-btn, .delete-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  text-decoration: none;
+  font-weight: bold;
+  margin-right: 5px;
+  display: inline-block;
+}
+.edit-btn { background-color: #007bff; color: white; }
+.edit-btn:hover { background-color: #0069d9; }
+.delete-btn { background-color: #dc3545; color: white; }
+.delete-btn:hover { background-color: #c82333; }
+
+             .giudico-btn-secondary2 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background:#374151;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:700;
+  border:1px solid rgba(255,255,255,.14);
+  transition:.2s;
+}
+.giudico-btn-secondary2:hover { background:#1f2937; }
+        </style>
+
+      <div class="g-main-wrap">
+        <div class="g-bg"></div>
+        <div class="g-overlay"></div>
+        <div class="g-frame"></div>
+
+        <div class="g-content">
+          <img src="/feedbio_provision_custom/static/src/img/LogoGiudico.png" alt="Giudico" class="g-logo"/>
+
+          <div class="lotes-container">
+            <div class="lotes-header">
+              <h2 t-translation="on">🏢 Lista de Proveedores</h2>
+              <div style="display:flex; gap:10px;">
+                <a href="/giudico/mantenimiento/proveedor/new" class="giudico-btn" t-translation="on">➕ Nuevo Proveedor</a>
+                <a href="/giudico/mantenimiento" class="giudico-btn1" t-translation="on">Volver</a>
+              </div>
+            </div>
+
+            <div class="giudico-table-wrapper">
+              <table class="giudico-table">
+                <thead>
+                  <tr>
+                    <th t-translation="on">Código</th>
+                    <th t-translation="on">Nombre</th>
+                    <th t-translation="on">Teléfono</th>
+                    <th t-translation="on">Email</th>
+                    <th t-translation="on">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <t t-foreach="proveedores" t-as="p">
+                    <tr>
+                      <td><t t-out="p['codigo']"/></td>
+                      <td><t t-out="p['nombre']"/></td>
+                      <td><t t-out="p['telefono']"/></td>
+                      <td><t t-out="p['email']"/></td>
+                      <td>
+                        <a t-att-href="'/giudico/mantenimiento/proveedor/edit/%d' % p['id']" class="edit-btn" t-translation="on">Editar</a>
+                        <a t-att-href="'/giudico/mantenimiento/proveedor/delete/%d' % p['id']" class="delete-btn" onclick="return confirm('¿Seguro que quieres eliminar este proveedor?');" t-translation="on">Eliminar</a>
+                      </td>
+                    </tr>
+                  </t>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </t>
+  </template>
+</odoo>

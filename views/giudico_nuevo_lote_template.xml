@@ -1,0 +1,169 @@
+<odoo>
+  <template id="giudico_nuevo_lote_template" name="Nuevo/Editar Lote">
+    <t t-call="web.layout">
+    <t t-call="feedbio_provision_custom.giudico_lang_buttons"/>
+      <style>
+        html, body {
+          background-image: url('/feedbio_provision_custom/static/src/img/backgroundweb.png');
+          background-size: cover;
+          background-position: center;
+          background-attachment: fixed;
+          background-repeat: no-repeat;
+        }
+        .form-container {
+          max-width: 900px;
+          margin: 30px auto;
+          background: rgba(255,255,255,0.95);
+          padding: 24px;
+          border-radius: 8px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .form-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 14px;
+        }
+        label { font-weight: 600; }
+        input, select, textarea {
+          width: 100%;
+          box-sizing: border-box;
+          padding: 8px 10px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+        }
+        .giudico-btn {
+          background-color: #28a745;
+          color: white;
+          padding: 10px 18px;
+          text-decoration: none;
+          border-radius: 5px;
+          font-weight: bold;
+          display: inline-block;
+          border: none;
+          cursor: pointer;
+        }
+        .giudico-btn:hover { background-color: #218838; }
+        .giudico-btn-secondary {
+          background-color: #6c757d;
+          color: white;
+          padding: 10px 18px;
+          text-decoration: none;
+          border-radius: 5px;
+          font-weight: bold;
+        }
+        .giudico-btn-secondary:hover { background-color: #5a6268; }
+        .g-actions {
+          display: flex;
+          justify-content: flex-end;
+          gap: 10px;
+          margin-top: 16px;
+        }
+               .giudico-btn-secondary2 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background:#374151;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:700;
+  border:1px solid rgba(255,255,255,.14);
+  transition:.2s;
+}
+.giudico-btn-secondary2:hover { background:#1f2937; }
+        </style>
+
+
+      <div class="form-container">
+        <h2 style="color:#28a745; text-align:center;" t-translation="on">
+          <t t-if="lote">Editar Lote</t>
+          <t t-if="not lote">Nuevo Lote</t>
+        </h2>
+
+        <form method="POST">
+          <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+          <div class="form-row">
+            <div>
+              <label t-translation="on">Campaña</label>
+              <select name="campana_id" required="required">
+                <t t-foreach="campanas" t-as="c">
+                  <option t-att-value="c.id"
+                          t-att-selected="lote and lote.campana_id.id == c.id">
+                    <t t-out="c.name"/>
+                  </option>
+                </t>
+              </select>
+            </div>
+            <div class="form-group">
+  <label t-translation="on">Contrato</label>
+  <select name="contrato_id" required="required">
+    <option value="" t-translation="on">Seleccione un contrato</option>
+    <t t-foreach="contratos" t-as="c">
+      <option t-att-value="c.id"
+              t-att-selected="lote and lote.contrato_id.id == c.id">
+        <t t-out="c.name"/> - <t t-out="c.proveedor_id.name"/>
+      </option>
+    </t>
+  </select>
+</div>
+
+
+            <div>
+              <label t-translation="on">Proveedores</label>
+              <select name="proveedor_ids" multiple="multiple" required="required" style="height: 120px;">
+                <t t-foreach="proveedores" t-as="p">
+                  <option t-att-value="p.id"
+                          t-att-selected="lote and p.id in lote.proveedor_ids.ids">
+                    <t t-out="p.name"/>
+                  </option>
+                </t>
+              </select> 
+            </div>
+            <div class="form-group">
+  <label t-translation="on">Almacén</label>
+  <select name="almacen_id" required="required">
+    <option value="" t-translation="on">Seleccione un almacén</option>
+    <t t-foreach="almacenes" t-as="a">
+      <option t-att-value="a.id"
+              t-att-selected="lote and a.id == lote.almacen_id.id">
+        <t t-out="a.name"/>
+      </option>
+    </t>
+  </select>
+</div>
+
+          </div>
+
+          <div class="form-row">
+            <div>
+              <label t-translation="on">Capacidad Total (MT)</label>
+              <input type="number" step="0.01" name="capacidad_mt"
+                     t-att-value="lote.capacidad_mt if lote else ''" required="required"/>
+            </div>
+            <div>
+              <label t-translation="on">MT Acumulados</label>
+              <input type="number" step="0.01" name="mt_actual"
+                     t-att-value="lote.mt_actual if lote else ''" required="required"/>
+            </div>
+          </div>
+
+          <div>
+            <label t-translation="on">Observaciones</label>
+            <textarea name="observaciones" rows="3"
+          >
+  <t t-out="lote.observaciones if lote else ''"/>
+</textarea>
+
+          </div>
+
+          <div class="g-actions">
+            <button type="submit" class="giudico-btn" t-translation="on">Guardar</button>
+            <a href="/giudico/lotes" class="giudico-btn-secondary" t-translation="on">Volver</a>
+          </div>
+        </form>
+      </div>
+    </t>
+  </template>
+</odoo>

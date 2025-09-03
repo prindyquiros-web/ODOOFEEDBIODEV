@@ -1,0 +1,310 @@
+<odoo>
+  <data>
+
+    <!-- LISTA DE ALMACENES -->
+    <template id="giudico_almacenes_template" name="Gestión de Almacenes">
+      <t t-call="web.layout">
+        <t t-call-assets="web.assets_frontend" t-js="true"/>
+<t t-call="feedbio_provision_custom.giudico_lang_buttons"/>
+        <style>
+
+         html, body {
+  height: 100%;
+  margin: 0;
+  overflow-y: auto;   /* scroll vertical global */
+}
+
+.g-main-wrap {
+  position: relative;
+  min-height: 100vh;
+  display: block;     /* ya no flex centrado */
+  padding: 20px 0;
+  overflow: visible;
+}
+
+/* Fondo fijo */
+.g-bg,
+.g-overlay,
+.g-frame {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.g-bg {
+  background-image: url('/feedbio_provision_custom/static/src/img/backgroundweb.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transform: scale(1.02);
+  filter: saturate(1.05);
+}
+
+.g-overlay {
+  background: radial-gradient(ellipse at center, rgba(0,0,0,.15), rgba(0,0,0,.35));
+}
+
+.g-frame {
+  inset: 12px;
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+}
+
+
+          
+          .g-logo{height:clamp(80px,15vw,160px);object-fit:contain;margin:0 auto 20px;display:block;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))}
+          .g-title{font-size:clamp(20px,2.4vw,28px);letter-spacing:.5px;color:#fff;font-weight:600;text-shadow:0 2px 6px rgba(3,42,9,.45);margin:0 0 22px}
+
+          .g-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1400px;
+  padding: 20px;
+  margin: 0 auto;      /* ✅ centra el contenido */
+  text-align: center;
+}
+
+.contratos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  justify-items: center;   /* ✅ centra cada tarjeta dentro de la columna */
+}
+          .contrato-card{background:#fff;border-radius:10px;box-shadow:0 4px 8px rgba(0,0,0,0.08);overflow:hidden;display:flex;flex-direction:column}
+          .contrato-content{padding:20px}
+          .contrato-content h4{font-size:18px;margin-bottom:10px;color:#28a745}
+          .contrato-content p{margin:3px 0;font-size:14px;color:#555}
+          .contrato-actions{display:flex;flex-wrap:wrap;gap:6px;padding:0 20px 20px}
+
+          .estado-banner{text-align:center;font-weight:bold;color:#fff;padding:6px;font-size:14px}
+          .estado-abierto{background:#28a745}
+          .estado-cerrado{background:#dc2626}
+
+          .btn{padding:6px 12px;font-size:12px;border-radius:6px;color:#fff;text-decoration:none;font-weight:600}
+          .btn-warning{background:#f59e0b}
+          .btn-warning:hover{background:#b45309}
+          .btn-danger{background:#dc2626}
+          .btn-danger:hover{background:#b91c1c}
+          .btn-secondary{background:#2563eb}
+          .btn-secondary:hover{background:#1e3a8a}
+
+          .giudico-btn{display:inline-flex;align-items:center;justify-content:center;background:#16a34a;color:#fff;padding:8px 14px;border-radius:8px;text-decoration:none;font-weight:700;border:1px solid rgba(255,255,255,.14)}
+          .giudico-btn:hover{background:#15803d}
+          .giudico-btn-secondary{background:#374151;color:#fff;padding:8px 14px;border-radius:8px;text-decoration:none;font-weight:700}
+          .giudico-btn-secondary:hover{background:#1f2937}
+          .contrato-toolbar{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.1);padding:10px;border-radius:10px;margin-bottom:20px}
+          .contrato-title{font-size:20px;font-weight:700;color:#fff}
+           .giudico-btn-secondary2 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background:#374151;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:700;
+  border:1px solid rgba(255,255,255,.14);
+  transition:.2s;
+}
+.giudico-btn-secondary2:hover { background:#1f2937; }
+        </style>
+
+
+        <div class="g-main-wrap">
+          <div class="g-bg"></div><div class="g-overlay"></div><div class="g-frame"></div>
+          <div class="g-content">
+            <img src="/feedbio_provision_custom/static/src/img/LogoGiudico.png" alt="Giudico" class="g-logo"/>
+            <div class="contrato-toolbar">
+              <a href="/giudico/menu" class="giudico-btn-secondary" t-translation="on">Volver</a>
+              <h2 class="contrato-title" t-translation="on">Lista de Almacenes</h2>
+              <a href="/giudico/almacen/nuevo" class="giudico-btn" t-translation="on">➕ Nuevo Almacén</a>
+            </div>
+
+            <t t-if="almacenes">
+              <div class="contratos-grid">
+                <t t-foreach="almacenes" t-as="a">
+                  <div class="contrato-card">
+                    <div class="estado-banner" t-att-class="'estado-banner estado-%s' % a.estado">
+                      <t t-out="a.estado.capitalize()"/>
+                    </div>
+                    <div class="contrato-content">
+                      <h4><t t-out="a.name"/></h4>
+                      <p><strong t-translation="on">Capacidad:</strong> <t t-out="a.capacidad_mt"/> MT</p>
+                    </div>
+                    <div class="contrato-actions">
+                      <a t-att-href="'/giudico/almacen/editar?id=%d' % a.id" class="btn btn-warning" t-translation="on">Editar</a>
+                      <a t-att-href="'/giudico/almacen/eliminar?id=%d' % a.id" class="btn btn-danger"
+                         onclick="return confirm('¿Seguro que quieres eliminar este almacén?');" t-translation="on">Eliminar</a>
+                      <a t-att-href="'/giudico/almacen/cambiar_estado?id=%d' % a.id" class="btn btn-secondary">
+                        <t t-if="a.estado == 'abierto'" t-translation="on">Cerrar</t>
+                        <t t-if="a.estado == 'cerrado'" t-translation="on">Abrir</t>
+                      </a>
+                    </div>
+                  </div>
+                </t>
+              </div>
+            </t>
+            <t t-if="not almacenes">
+              <p t-translation="on">No hay almacenes registrados.</p>
+            </t>
+          </div>
+        </div>
+      </t>
+    </template>
+
+  <!-- FORMULARIO NUEVO -->
+    <template id="giudico_nuevo_almacen_template" name="Nuevo Almacén">
+      <t t-call="web.layout">
+        <t t-call-assets="web.assets_frontend" t-js="true"/>
+<t t-call="feedbio_provision_custom.giudico_lang_buttons"/>
+        <style>
+          .g-main-wrap{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow:hidden}
+          .g-bg{position:absolute;inset:0;background-image:url('/feedbio_provision_custom/static/src/img/backgroundweb.png');background-size:cover;background-position:center;background-repeat:no-repeat;transform:scale(1.02);filter:saturate(1.05)}
+          .g-overlay{position:absolute;inset:0;background:radial-gradient(ellipse at center, rgba(0,0,0,.15), rgba(0,0,0,.35))}
+          .g-frame{position:absolute;inset:12px;border-radius:16px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);pointer-events:none}
+          .g-content{position:relative;z-index:2;width:100%;max-width:800px;padding:28px 20px 48px;text-align:center}
+          .g-logo{height:clamp(80px,15vw,160px);object-fit:contain;margin:0 auto 20px;display:block;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))}
+          .g-title{font-size:clamp(20px,2.4vw,28px);letter-spacing:.5px;color:#fff;font-weight:600;text-shadow:0 2px 6px rgba(3,42,9,.45);margin:0 0 22px}
+          .g-form{background:rgba(255,255,255,.06);backdrop-filter:blur(2px);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:20px;box-shadow:0 8px 18px rgba(0,0,0,.18);text-align:left}
+          .form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+          .form-group label{color:#fff;font-weight:600}
+          .form-group input, .form-group select{
+            width:100%;padding:10px;border-radius:10px;
+            border:1px solid rgba(255,255,255,.18);
+            background:rgba(255,255,255,.9);
+          }
+          .giudico-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:#16a34a;color:#fff;padding:12px 18px;border-radius:12px;text-decoration:none;font-weight:700;letter-spacing:.3px;border:1px solid rgba(255,255,255,.14);cursor:pointer}
+          .giudico-btn:hover{background:#15803d}
+          .giudico-btn-secondary{background:#374151;color:#fff;padding:12px 18px;border-radius:12px;text-decoration:none;font-weight:700}
+          .giudico-btn-secondary:hover{background:#1f2937}
+          .g-actions{display:flex;gap:10px;justify-content:center;margin-top:14px}
+                .giudico-btn-secondary2 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background:#374151;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:700;
+  border:1px solid rgba(255,255,255,.14);
+  transition:.2s;
+}
+.giudico-btn-secondary2:hover { background:#1f2937; }
+        </style>
+
+
+
+        <div class="g-main-wrap">
+          <div class="g-bg"></div><div class="g-overlay"></div><div class="g-frame"></div>
+          <div class="g-content">
+            <img src="/feedbio_provision_custom/static/src/img/LogoGiudico.png" alt="Giudico" class="g-logo"/>
+            <h2 class="g-title" t-translation="on">➕ Nuevo Almacén</h2>
+            <form class="g-form" method="POST">
+              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+              <div class="form-group">
+                <label t-translation="on">Nombre</label>
+                <input type="text" name="name" required="required"/>
+              </div>
+              <div class="form-group">
+                <label t-translation="on">Capacidad (MT)</label>
+                <input type="number" name="capacidad_mt" step="0.01"/>
+              </div>
+              <div class="form-group">
+                <label t-translation="on">Estado</label>
+                <select name="estado">
+                  <option value="abierto" t-translation="on">Abierto</option>
+                  <option value="cerrado" t-translation="on">Cerrado</option>
+                </select>
+              </div>
+              <div class="g-actions">
+                <button type="submit" class="giudico-btn" t-translation="on">Guardar</button>
+                <a href="/giudico/almacenes" class="giudico-btn-secondary" t-translation="on">Cancelar</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </t>
+    </template>
+
+    <!-- FORMULARIO EDITAR -->
+    <template id="giudico_editar_almacen_template" name="Editar Almacén">
+      <t t-call="web.layout">
+        <t t-call-assets="web.assets_frontend" t-js="true"/>
+
+        <style>
+          /* mismo estilo que Nuevo */
+          .g-main-wrap{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow:hidden}
+          .g-bg{position:absolute;inset:0;background-image:url('/feedbio_provision_custom/static/src/img/backgroundweb.png');background-size:cover;background-position:center;background-repeat:no-repeat;transform:scale(1.02);filter:saturate(1.05)}
+          .g-overlay{position:absolute;inset:0;background:radial-gradient(ellipse at center, rgba(0,0,0,.15), rgba(0,0,0,.35))}
+          .g-frame{position:absolute;inset:12px;border-radius:16px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);pointer-events:none}
+          .g-content{position:relative;z-index:2;width:100%;max-width:800px;padding:28px 20px 48px;text-align:center}
+          .g-logo{height:clamp(80px,15vw,160px);object-fit:contain;margin:0 auto 20px;display:block;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))}
+          .g-title{font-size:clamp(20px,2.4vw,28px);letter-spacing:.5px;color:#fff;font-weight:600;text-shadow:0 2px 6px rgba(3,42,9,.45);margin:0 0 22px}
+          .g-form{background:rgba(255,255,255,.06);backdrop-filter:blur(2px);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:20px;box-shadow:0 8px 18px rgba(0,0,0,.18);text-align:left}
+          .form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+          .form-group label{color:#fff;font-weight:600}
+          .form-group input, .form-group select{
+            width:100%;padding:10px;border-radius:10px;
+            border:1px solid rgba(255,255,255,.18);
+            background:rgba(255,255,255,.9);
+          }
+          .giudico-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:#16a34a;color:#fff;padding:12px 18px;border-radius:12px;text-decoration:none;font-weight:700;letter-spacing:.3px;border:1px solid rgba(255,255,255,.14);cursor:pointer}
+          .giudico-btn:hover{background:#15803d}
+          .giudico-btn-secondary{background:#374151;color:#fff;padding:12px 18px;border-radius:12px;text-decoration:none;font-weight:700}
+          .giudico-btn-secondary:hover{background:#1f2937}
+          .g-actions{display:flex;gap:10px;justify-content:center;margin-top:14px}
+                .giudico-btn-secondary2 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background:#374151;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:700;
+  border:1px solid rgba(255,255,255,.14);
+  transition:.2s;
+}
+.giudico-btn-secondary2:hover { background:#1f2937; }
+        </style>
+
+
+        <div class="g-main-wrap">
+          <div class="g-bg"></div><div class="g-overlay"></div><div class="g-frame"></div>
+          <div class="g-content">
+            <img src="/feedbio_provision_custom/static/src/img/LogoGiudico.png" alt="Giudico" class="g-logo"/>
+            <h2 class="g-title" t-translation="on">✏️ Editar Almacén</h2>
+            <form class="g-form" method="POST">
+              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+              <div class="form-group">
+                <label t-translation="on">Nombre</label>
+                <input type="text" name="name" t-att-value="almacen.name"/>
+              </div>
+              <div class="form-group">
+                <label t-translation="on">Capacidad (MT)</label>
+                <input type="number" name="capacidad_mt" step="0.01" t-att-value="almacen.capacidad_mt"/>
+              </div>
+              <div class="form-group">
+                <label t-translation="on">Estado</label>
+                <select name="estado">
+                  <option value="abierto" t-att-selected="almacen.estado == 'abierto'" t-translation="on">Abierto</option>
+                  <option value="cerrado" t-att-selected="almacen.estado == 'cerrado'" t-translation="on">Cerrado</option>
+                </select>
+              </div>
+              <div class="g-actions">
+                <button type="submit" class="giudico-btn" t-translation="on">Actualizar</button>
+                <a href="/giudico/almacenes" class="giudico-btn-secondary" t-translation="on">Cancelar</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </t>
+    </template>
+  </data>
+</odoo>

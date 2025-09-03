@@ -1,0 +1,85 @@
+<odoo>
+    <record id="paperformat_recepcion" model="report.paperformat">
+        <field name="name">Recepción sin margen</field>
+        <field name="format">A4</field>
+        <field name="margin_top">5</field>
+        <field name="margin_bottom">10</field>
+        <field name="margin_left">10</field>
+        <field name="margin_right">10</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="orientation">Portrait</field>
+    </record>
+
+    <template id="report_recepcion_pdf_template">
+        <t t-call="web.external_layout">
+            
+
+                <!-- HEADER -->
+                <div style="display:flex;align-items:center;border-bottom:2px solid #28a745;padding:10px 0;">
+                    <div style="flex:1;">
+                        <img t-att-src="'data:image/png;base64,%s' % logo_giudico" style="max-height:80px;"/>
+                    </div>
+                    <div style="flex:3;text-align:right;">
+                        <h1 style="margin:0;font-size:24px;color:#28a745;" t-translation="on">RECEPCIÓN</h1>
+                        <p style="margin:0;font-size:12px;color:#666;" t-translation="on">Documento generado por el sistema FeedBio</p>
+                    </div>
+                </div>
+
+                <!-- CONTENIDO -->
+                 <main class="o_main">
+                 <div class="page" style="font-family:Arial, sans-serif;font-size:13px;">
+                <t t-foreach="docs" t-as="doc">
+                    <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+                        <tbody>
+                            <tr><td style="padding:6px;font-weight:bold;width:25%;background:#f8f8f8;" t-translation="on">Referencia:</td><td style="padding:6px;"><t t-out="doc.name"/></td></tr>
+                            <tr><td style="padding:6px;font-weight:bold;background:#f8f8f8;" t-translation="on">Orden:</td><td style="padding:6px;"><t t-out="doc.orden_id.name"/></td></tr>
+                            <tr><td style="padding:6px;font-weight:bold;background:#f8f8f8;" t-translation="on">Proveedor:</td><td style="padding:6px;"><t t-out="doc.proveedor_id.name"/></td></tr>
+                            <tr><td style="padding:6px;font-weight:bold;background:#f8f8f8;" t-translation="on">Producto:</td><td style="padding:6px;"><t t-out="doc.producto"/></td></tr>
+                            <tr><td style="padding:6px;font-weight:bold;background:#f8f8f8;" t-translation="on">Cantidad (MT):</td><td style="padding:6px;"><t t-out="doc.cantidad"/></td></tr>
+                            <tr><td style="padding:6px;font-weight:bold;background:#f8f8f8;" t-translation="on">Peso Neto (kg):</td><td style="padding:6px;"><t t-out="doc.peso_neto"/></td></tr>
+                            <tr><td style="padding:6px;font-weight:bold;background:#f8f8f8;" t-translation="on">Merma (kg):</td><td style="padding:6px;"><t t-out="doc.merma"/></td></tr>
+                            <tr><td style="padding:6px;font-weight:bold;background:#f8f8f8;" t-translation="on">Desviación:</td>
+                                <td style="padding:6px;">
+                                    <span t-attf-style="color: #{'red' if doc.desviacion and doc.desviacion > 10 else 'green'};">
+                                        <t t-out="'%.2f' % doc.desviacion"/> %
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr><td style="padding:6px;font-weight:bold;background:#f8f8f8;" t-translation="on">Estado:</td><td style="padding:6px;"><t t-out="doc.estado"/></td></tr>
+                            <tr><td style="padding:6px;font-weight:bold;background:#f8f8f8;" t-translation="on">Fecha Entrega:</td><td style="padding:6px;"><t t-out="doc.fecha_entrega"/></td></tr>
+                        </tbody>
+                    </table>
+
+                    <!-- DOCUMENTOS -->
+                    <h3 style="margin-top:15px;margin-bottom:8px;color:#28a745;" t-translation="on">Documentos Relacionados</h3>
+                    <ul>
+                        <t t-foreach="doc.documento_ids" t-as="d">
+                            <li><t t-out="d.file_filename"/></li>
+                        </t>
+                    </ul>
+
+                    <!-- FIRMAS -->
+                    <div style="margin-top:40px;">
+                        <table style="width:100%;text-align:center;">
+                            <tr>
+                                <td>___________________________<br/><strong t-translation="on">Responsable Recepción</strong></td>
+                                <td>___________________________<br/><strong t-translation="on">Proveedor</strong></td>
+                            </tr>
+                        </table>
+                    </div>
+                </t>
+            </div>
+            </main>
+        </t>
+    </template>
+
+    <record id="report_recepcion_pdf_action" model="ir.actions.report">
+        <field name="name">Recepción</field>
+        <field name="model">x.recepcion</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">feedbio_provision_custom.report_recepcion_pdf_template</field>
+        <field name="print_report_name">'Recepcion-%s' % (object.name)</field>
+        <field name="paperformat_id" ref="feedbio_provision_custom.paperformat_recepcion"/>
+    </record>
+</odoo>

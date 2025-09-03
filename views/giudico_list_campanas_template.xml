@@ -1,0 +1,197 @@
+<odoo>
+  <template id="giudico_list_campanas_template" name="Lista de Campañas Giudico">
+    <t t-call="web.layout">
+      <t t-call-assets="web.assets_frontend" t-js="false"/>
+      <t t-call="feedbio_provision_custom.giudico_lang_buttons"/>
+      <style>
+      html, body {
+  height: 100%;
+  margin: 0;
+  overflow-y: auto;   /* scroll global */
+}
+
+.g-main-wrap {
+  position: relative;
+  min-height: 100vh;
+  display: block;     /* ya no flex centrado */
+  padding: 20px 0;
+  overflow: visible;  /* deja crecer el contenido */
+}
+
+/* Fondo fijo */
+.g-bg,
+.g-overlay,
+.g-frame {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.g-bg {
+  background-image: url('/feedbio_provision_custom/static/src/img/backgroundweb.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transform: scale(1.02);
+  filter: saturate(1.05);
+}
+.g-overlay {
+  background: radial-gradient(ellipse at center, rgba(0,0,0,.15), rgba(0,0,0,.35));
+}
+.g-frame {
+  inset: 12px;
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+}
+
+/* Contenido centrado */
+.g-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1000px;
+  padding: 28px 20px 48px;
+  margin: 0 auto;     /* ✅ centra horizontalmente */
+  text-align: center;
+}
+
+.g-logo {
+  height: clamp(80px,15vw,160px);
+  object-fit: contain;
+  margin: 0 auto 20px;
+  display: block;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,.25));
+}
+
+.g-title {
+  font-size: clamp(20px,2.4vw,28px);
+  letter-spacing: .5px;
+  color: #fff;
+  font-weight: 600;
+  text-shadow: 0 2px 6px rgba(3,42,9,.45);
+  margin: 0 0 22px;
+}
+
+.g-actions-top {
+  margin-bottom: 14px;
+  text-align: right;
+}
+
+/* Botones */
+.giudico-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #16a34a;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 700;
+  border: 1px solid rgba(255,255,255,.14);
+}
+.giudico-btn:hover { background:#15803d; }
+
+/* Tabla */
+.giudico-table {
+  width: 100%;
+  background: #fff;
+  border-collapse: collapse;
+  color: #111;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.giudico-table th, .giudico-table td {
+  padding: 12px;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  text-align: left;
+}
+.giudico-table th {
+  background: rgba(0,0,0,0.05);
+  font-weight: 600;
+  color: #000;
+}
+.giudico-table tr:hover td {
+  background: rgba(0,0,0,0.04);
+}
+
+/* Botón eliminar */
+.delete-btn {
+  background: #dc2626;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+}
+.delete-btn:hover { background:#b91c1c; }
+
+             .giudico-btn-secondary2 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background:#374151;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:700;
+  border:1px solid rgba(255,255,255,.14);
+  transition:.2s;
+}
+.giudico-btn-secondary2:hover { background:#1f2937; }
+        </style>
+
+
+      <div class="g-main-wrap">
+        <div class="g-bg"></div><div class="g-overlay"></div><div class="g-frame"></div>
+        <div class="g-content">
+          <img src="/feedbio_provision_custom/static/src/img/LogoGiudico.png" alt="Giudico" class="g-logo"/>
+          <h2 class="g-title" t-translation="on">📅 Lista de Campañas</h2>
+
+          <div class="g-actions-top">
+  <a href="/giudico/mantenimiento/campana" class="giudico-btn" t-translation="on">➕ Nueva Campaña</a>
+   
+              
+              <a href="/giudico/mantenimiento" class="giudico-btn" t-translation="on">Volver</a>
+            
+</div>
+
+
+          <table class="giudico-table">
+            <thead>
+              <tr>
+                <th t-translation="on">Nombre</th>
+                <th t-translation="on">Año Inicial</th>
+                <th t-translation="on">Año Final</th>
+                <th t-translation="on">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <t t-foreach="campanas" t-as="c">
+                <tr>
+                  <td><t t-out="c.name"/></td>
+                  <td><t t-out="c.anio_inicial"/></td>
+                  <td><t t-out="c.anio_final"/></td>
+                  <td>
+                <a t-att-href="'/giudico/mantenimiento/campana/delete/%d' % c.id"
+   class="delete-btn"
+   onclick="return confirm('¿Seguro que quieres eliminar esta campaña?');"
+   t-translation="on">
+   Eliminar
+</a>
+
+
+
+                  </td>
+                </tr>
+              </t>
+            </tbody>
+          </table>
+          
+        </div>
+      </div>
+    </t>
+  </template>
+</odoo>

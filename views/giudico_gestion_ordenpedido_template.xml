@@ -1,0 +1,418 @@
+<odoo>
+  <data>
+
+   <!-- LISTA ÓRDENES DE PEDIDO -->
+<template id="giudico_orden_pedido_template" name="Lista Ordenes de Pedido">
+  <t t-call="web.layout">
+    <t t-call-assets="web.assets_frontend" t-js="true"/>
+    <t t-call="feedbio_provision_custom.giudico_lang_buttons"/>
+
+    <style>
+   html, body {
+  height: 100%;
+  margin: 0;
+  overflow-y: auto;   /* ✅ scroll global */
+}
+
+.g-main-wrap {
+  position: relative;
+  min-height: 100vh;
+  display: block;     /* ❌ ya no flex centrado */
+  padding: 20px 0;
+  overflow: visible;  /* ✅ permite crecer */
+}
+
+/* === Fondo fijo === */
+.g-bg,
+.g-overlay,
+.g-frame {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.g-bg {
+  background-image: url('/feedbio_provision_custom/static/src/img/backgroundweb.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transform: scale(1.02);
+  filter: saturate(1.05);
+}
+.g-overlay {
+  background: radial-gradient(ellipse at center, rgba(0,0,0,.15), rgba(0,0,0,.35));
+}
+.g-frame {
+  inset: 12px;
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+}
+
+/* === Contenido centrado === */
+.g-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1200px;
+  padding: 28px 20px 48px;
+  margin: 0 auto;   /* ✅ centra horizontalmente */
+}
+
+
+      /* Caja principal */
+      .orden-container {
+        background: rgba(255,255,255,0.92);
+        border-radius: 14px;
+        padding: 20px 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,.15);
+      }
+
+      /* Toolbar */
+      .contrato-toolbar {
+        position: sticky; top: 0; z-index: 10;
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        background: rgba(244,246,249,.92);
+        padding: 10px 12px; margin-bottom: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.08);
+        backdrop-filter: blur(2px);
+      }
+      .contrato-title { margin: 0; font-size: 20px; font-weight: 800; color: #16a34a; }
+
+      /* Botones */
+      .giudico-btn {
+        background-color: #16a34a; color: white; padding: 10px 18px;
+        text-decoration: none; border-radius: 12px; font-weight: bold;
+        box-shadow: 0 6px 14px rgba(0,0,0,.15); transition: all .2s ease;
+      }
+      .giudico-btn:hover { background-color: #15803d; transform: translateY(-2px); }
+
+      .giudico-btn-secondary {
+        display: inline-flex; align-items: center; justify-content: center;
+        gap: 10px; background: #374151; color: #ffffff; padding: 10px 18px;
+        border-radius: 12px; text-decoration: none; font-weight: 700;
+        box-shadow: 0 4px 10px rgba(0,0,0,.15); transition: all .2s ease;
+      }
+      .giudico-btn-secondary:hover { background: #1f2937; transform: translateY(-2px); }
+
+      /* Cards */
+      .contrato-card {
+        background: white;
+        border-radius: 12px;
+        padding: 18px 22px;
+        margin-bottom: 15px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      }
+      .contrato-card h4 { color:#16a34a; margin-bottom:8px; }
+
+      .btn-sm { margin-right: 5px; }
+      .btn {
+        display: inline-block;
+        padding: 6px 12px;
+        font-size: 0.9rem;
+        font-weight: bold;
+        text-align: center;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: background-color 0.2s ease-in-out;
+      }
+      .btn-secondary { background-color: #6c757d; color: white; }
+      .btn-warning { background-color: #ffc107; color: black; }
+      .btn-danger { background-color: #dc3545; color: white; }
+      .btn:hover { opacity: 0.9; color: white; }
+             .giudico-btn-secondary2 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background:#374151;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:700;
+  border:1px solid rgba(255,255,255,.14);
+  transition:.2s;
+}
+.giudico-btn-secondary2:hover { background:#1f2937; }
+        </style>
+
+
+    <div class="g-main-wrap">
+      <div class="g-bg"></div>
+      <div class="g-overlay"></div>
+      <div class="g-frame"></div>
+
+      <div class="g-content">
+        <div class="orden-container">
+          <!-- Barra superior -->
+          <div class="contrato-toolbar">
+            <a href="/giudico/menu" class="giudico-btn-secondary" t-translation="on">Volver</a>
+            <h2 class="contrato-title" t-translation="on">Lista de Órdenes de Pedido</h2>
+            <a href="/giudico/orden_pedido/nuevo" class="giudico-btn" t-translation="on">NUEVA ORDEN</a>
+          </div>
+
+          <!-- Filtros -->
+          <form method="get" action="/giudico/orden_pedido" style="margin-bottom:20px; display:flex; gap:10px; flex-wrap:wrap;">
+            <input type="text" name="numero" t-att-value="request.params.get('numero')" placeholder="N° orden"/>
+            <input type="text" name="proveedor" t-att-value="request.params.get('proveedor')" placeholder="Proveedor"/>
+            <input type="date" name="fecha_inicio" t-att-value="request.params.get('fecha_inicio')"/>
+            <input type="date" name="fecha_fin" t-att-value="request.params.get('fecha_fin')"/>
+            <button type="submit" class="giudico-btn" t-translation="on">Buscar</button>
+          </form>
+
+          <!-- Lista -->
+          <t t-if="ordenes">
+            <t t-foreach="ordenes" t-as="o">
+              <div class="contrato-card">
+                <h4><t t-out="o.name"/></h4>
+                <p><strong t-translation="on">Proveedor:</strong> <t t-out="o.supplier_name"/></p>
+                <p><strong t-translation="on">Contrato:</strong> <t t-out="o.contract_number"/></p>
+                <p><strong t-translation="on">Cantidad:</strong> <t t-out="o.cantidad_mt"/> MT</p>
+                <p><strong t-translation="on">Fecha entrega:</strong> <t t-out="o.fecha_entrega"/></p>
+                <div style="margin-top:10px;">
+                  <a t-att-href="'/giudico/orden_pedido/pdf?id=%d' % o.id" class="btn btn-secondary btn-sm" target="_blank" t-translation="on">PDF</a>
+                  <a t-att-href="'/giudico/orden_pedido/nuevo?id=%d' % o.id" class="btn btn-warning btn-sm" t-translation="on">Editar</a>
+                  <a t-att-href="'/giudico/orden_pedido/eliminar?id=%d' % o.id"
+                     class="btn btn-danger btn-sm"
+                     onclick="return confirm('¿Seguro que quieres eliminar esta orden?');"
+                     t-translation="on">Eliminar</a>
+                </div>
+              </div>
+            </t>
+          </t>
+          <t t-if="not ordenes">
+            <p t-translation="on">No hay órdenes registradas.</p>
+          </t>
+        </div>
+      </div>
+    </div>
+  </t>
+</template>
+
+
+    <!-- NUEVA ORDEN -->
+
+<!-- NUEVA ORDEN -->
+<template id="giudico_nueva_orden_pedido_template" name="Nueva Orden de Pedido">
+  <t t-call="web.layout">
+    <t t-call-assets="web.assets_frontend" t-js="true"/>
+    <t t-call="feedbio_provision_custom.giudico_lang_buttons"/>
+    <style>
+      html, body {
+        background-image: url('/feedbio_provision_custom/static/src/img/backgroundweb.png');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+      }
+
+      /* Barra superior */
+      .contrato-toolbar {
+        position: sticky; top: 0; z-index: 10;
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        background: rgba(244,246,249,.9);
+        padding: 10px 12px; margin-bottom: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.06);
+        backdrop-filter: blur(2px);
+      }
+      .contrato-title {
+        margin: 0; font-size: 20px; font-weight: 700; color: #28a745;
+      }
+      .giudico-btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: #374151;
+        color: #ffffff;
+        padding: 10px 18px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 700;
+        box-shadow: 0 4px 10px rgba(0,0,0,.15);
+        transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+      }
+      .giudico-btn-secondary:hover {
+        transform: translateY(-2px);
+        background: #1f2937;
+        box-shadow: 0 8px 16px rgba(0,0,0,.22);
+      }
+
+      /* Contenedor del formulario */
+      .form-container {
+        max-width: 900px;
+        margin: 0 auto 40px;
+        background: rgba(255,255,255,0.95);
+        padding: 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      }
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      label {
+        font-weight: 600;
+      }
+      input, select {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 8px 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      .giudico-btn {
+        background-color: #28a745;
+        color: white;
+        padding: 10px 18px;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+        display: inline-block;
+        border: none;
+        cursor: pointer;
+      }
+      .giudico-btn:hover {
+        background-color: #218838;
+        color: white;
+      }
+            .giudico-btn-secondary2 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background:#374151;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:700;
+  border:1px solid rgba(255,255,255,.14);
+  transition:.2s;
+}
+.giudico-btn-secondary2:hover { background:#1f2937; }
+        </style>
+ 
+
+    <!-- Barra superior -->
+    <div class="contrato-toolbar">
+      <a href="/giudico/orden_pedido" class="giudico-btn-secondary" t-translation="on">Volver</a>
+   
+      <h2 class="contrato-title" t-translation="on">Nueva Orden de Pedido</h2>
+      <div style="width: 80px;"></div> <!-- espacio para balancear -->
+    </div>
+
+    <div class="form-container">
+ <t t-if="mensaje">
+        <div class="alert alert-warning" role="alert">
+          <t t-out="mensaje"/>
+        </div>
+      </t>
+      <form method="POST">
+        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+        <input type="hidden" name="id" t-att-value="orden.id if orden else ''"/>
+
+        <div class="form-row">
+          <div>
+            <label t-translation="on">N° de Solicitud</label>
+            <input type="text" name="name" t-att-value="orden.name if orden else 'Nuevo'" readonly="readonly"/>
+          </div>
+          <div>
+            <label t-translation="on">Fecha de Solicitud</label>
+            <input type="date" name="fecha_solicitud" t-att-value="orden.fecha_solicitud if orden else ''" readonly="readonly"/>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label t-translation="on">Contrato Asociado</label>
+            <select name="contrato_id" required="required">
+              <t t-foreach="contratos" t-as="c">
+                <option t-att-value="c.id" 
+                  t-att-selected="orden and c.id == (orden.contrato_id.id if orden.contrato_id else 0)">
+                  <t t-out="c.name"/>
+                </option>
+              </t>
+            </select>
+          </div>
+          <div>
+            <label t-translation="on">Internal Supplier Code</label>
+            <input type="text" name="supplier_code" 
+              t-att-value="codigo_proveedor or (datos_contrato.get('supplier_code') if datos_contrato else '')"/>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label t-translation="on">Supplier Name</label>
+            <input type="text" name="supplier_name" 
+              t-att-value="orden.supplier_name if orden else (datos_contrato.get('supplier_name') if datos_contrato else '')" 
+              readonly="readonly"/>
+          </div>
+          <div>
+            <label t-translation="on">Associated Contract Number</label>
+            <input type="text" name="contract_number" 
+              t-att-value="orden.contract_number if orden else (datos_contrato.get('contract_number') if datos_contrato else '')" 
+              readonly="readonly"/>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label t-translation="on">Product</label>
+            <input type="text" name="product" 
+              t-att-value="orden.product if orden else (datos_contrato.get('product') if datos_contrato else '')" 
+              readonly="readonly"/>
+          </div>
+          <div>
+            <label t-translation="on">Commercialization Campaign</label>
+            <input type="text" name="campaign" 
+              t-att-value="orden.campaign if orden else (datos_contrato.get('campaign') if datos_contrato else '')" 
+              readonly="readonly"/>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label t-translation="on">MT contracted</label>
+            <input type="number" step="0.001" name="mt_contracted" 
+              t-att-value="orden.mt_contracted if orden else (datos_contrato.get('mt_contracted') if datos_contrato else 0)" 
+              required="required"/>
+          </div>
+          <div></div>
+        </div>
+
+        <h3 style="margin-top:18px;" t-translation="on">Detalle de entrega</h3>
+        <div class="form-row">
+          <div>
+            <label t-translation="on">Cantidad (MT)</label>
+            <input type="number" step="0.01" name="cantidad_mt" t-att-value="orden.cantidad_mt if orden else ''" required="required"/>
+          </div>
+          <div>
+            <label t-translation="on">Precio Unitario (MT)</label>
+            <input type="number" step="0.01" name="precio_unitario" t-att-value="orden.precio_unitario if orden else ''" required="required"/>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label t-translation="on">Lugar de Entrega</label>
+            <input type="text" name="lugar_entrega" t-att-value="orden.lugar_entrega if orden else ''" required="required"/>
+          </div>
+          <div>
+            <label t-translation="on">Fecha de Entrega</label>
+            <input type="date" name="fecha_entrega" t-att-value="orden.fecha_entrega if orden else ''" required="required"/>
+          </div>
+        </div>
+
+        <button type="submit" class="giudico-btn" style="margin-top:16px;" t-translation="on">Guardar</button>
+      </form>
+    </div>
+  </t>
+</template>
+
+
+  </data>
+</odoo>

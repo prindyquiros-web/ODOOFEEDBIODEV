@@ -1,0 +1,94 @@
+<odoo>
+
+  <!-- Paperformat igual al de contrato -->
+  <record id="paperformat_contrato" model="report.paperformat">
+    <field name="name">Contrato sin margen</field>
+    <field name="format">A4</field>
+    <field name="margin_top">5</field>
+    <field name="margin_bottom">10</field>
+    <field name="margin_left">10</field>
+    <field name="margin_right">10</field>
+    <field name="header_line" eval="False"/>
+    <field name="header_spacing">0</field>
+    <field name="orientation">Portrait</field>
+  </record>
+
+  <!-- Template Adenda -->
+  <template id="report_adenda_pdf_template">
+    <t t-call="web.external_layout">
+
+      <!-- HEADER -->
+      <div style="display:flex;align-items:center;border-bottom:2px solid #28a745;padding:10px 0;">
+        <div style="flex:1;">
+          <img t-att-src="'data:image/png;base64,%s' % logo_giudico" style="max-height:80px;"/>
+        </div>
+        <div style="flex:3;text-align:right;">
+          <h1 style="margin:0;font-size:24px;color:#28a745;" t-translation="on">Adenda</h1>
+          <p style="margin:0;font-size:12px;color:#666;" t-translation="on">Documento generado por el sistema FeedBio</p>
+        </div>
+      </div>
+
+      <!-- CUERPO -->
+      <main class="oe_structure">
+        <div class="page" style="font-family:Arial, sans-serif;font-size:13px;">
+
+          <t t-foreach="docs" t-as="doc">
+            <p><strong t-translation="on">Date:</strong> <t t-out="doc.fecha"/></p>
+            <p><strong t-translation="on">Contract No.:</strong> <t t-out="doc.contrato_numero or doc.contrato_id.name"/></p>
+            <p><strong t-translation="on">Addendum Ref.:</strong> <t t-out="doc.name"/></p>
+
+            <p><strong t-translation="on">Seller:</strong></p>
+            <p style="white-space: pre-line;"><t t-out="doc.seller or ''"/></p>
+
+            <p><strong t-translation="on">Buyer:</strong></p>
+            <p style="white-space: pre-line;"><t t-out="doc.buyer or ''"/></p>
+
+            <p t-translation="on">
+              By this addendum, the parties agree to amend the contract signed on dd/mm/yyyy in the following points:
+            </p>
+            <div style="border:1px solid #999; padding:10px; margin:12px 0; min-height:80px;">
+              <t t-out="doc.descripcion or ''"/>
+            </div>
+
+            <p style="margin-top:20px;" t-translation="on">
+              All that is not modified in this addendum remains valid according to the original contract.
+            </p>
+
+            <p style="margin-top:20px;">
+              <span t-translation="on">Signed on</span> <t t-out="doc.fecha"/>.
+            </p>
+
+            <table style="width:100%; margin-top:40px;">
+              <tr>
+                <td style="width:50%; text-align:center;">
+                  <div style="border-top:1px solid #000; width:80%; margin:0 auto;"></div>
+                  <span t-translation="on">Seller</span>
+                </td>
+                <td style="width:50%; text-align:center;">
+                  <div style="border-top:1px solid #000; width:80%; margin:0 auto;"></div>
+                  <span t-translation="on">Buyer</span>
+                </td>
+              </tr>
+            </table>
+          </t>
+
+          <!-- PIE -->
+          <div style="margin-top:30px;font-size:11px;color:#666;text-align:center;" t-translation="on">
+            Document generated automatically
+          </div>
+        </div>
+      </main>
+    </t>
+  </template>
+
+  <!-- Acción del reporte -->
+  <record id="action_report_adenda_pdf" model="ir.actions.report">
+    <field name="name">Adenda PDF</field>
+    <field name="model">x.contrato_adenda</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">feedbio_provision_custom.report_adenda_pdf_template</field>
+    <field name="print_report_name">'Adenda - %s' % (object.name)</field>
+    <field name="paperformat_id" ref="feedbio_provision_custom.paperformat_contrato"/>
+  </record>
+
+</odoo>

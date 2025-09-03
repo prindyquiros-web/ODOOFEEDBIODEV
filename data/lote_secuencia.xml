@@ -1,0 +1,10 @@
+<odoo>
+  <record id="seq_x_lote" model="ir.sequence">
+    <field name="name">Secuencia Lotes</field>
+    <field name="code">x_lote</field> <!-- 👈 aquí con guion bajo -->
+    <field name="prefix">LOT-</field>
+    <field name="padding">4</field>
+    <field name="number_next">1</field>
+    <field name="implementation">standard</field>
+  </record>
+</odoo>

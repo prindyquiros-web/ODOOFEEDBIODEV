@@ -1,11 +1,40 @@
 <odoo>
-    <data noupdate="1">
-        <record id="seq_x_contrato" model="ir.sequence">
-            <field name="name">Secuencia Contrato</field>
-            <field name="code">x.contrato.seq</field>
-            <field name="prefix">CTR-</field>
-            <field name="padding">5</field>
-            <field name="company_id" eval="False"/>
-        </record>
-    </data>
+  <record id="seq_x_contrato" model="ir.sequence">
+    <field name="name">Secuencia Contrato</field>
+    <field name="code">x.contrato.seq</field>
+    <field name="prefix"></field>
+    <field name="padding">4</field>
+    <field name="number_next">1</field>
+    
+  </record>
+
+      <record id="seq_orden_pedido" model="ir.sequence">
+        <field name="name">Secuencia Orden de Pedido</field>
+        <field name="code">x.orden_pedido</field>
+        <field name="prefix">PO-%(year)s-</field>
+        <field name="padding">4</field>
+       
+
+    </record>
+
+  <record id="seq_x_recepcion" model="ir.sequence">
+    <field name="name">Secuencia Recepción</field>
+    <field name="code">x.recepcion</field>
+    <field name="prefix">REC-%(year)s-</field>
+    <field name="padding">4</field>
+    <field name="number_next">1</field>
+   
+  </record>
+
+<record id="seq_x_contrato_adenda" model="ir.sequence">
+  <field name="name">Adendas</field>
+  <field name="code">x.contrato_adenda_seq</field>
+  <field name="prefix">ADENDA-</field> <!-- ✅ en vez de ADENDA/ -->
+  <field name="padding">4</field>
+  <field name="number_next">1</field>
+  
+</record>
+
+
+
 </odoo>

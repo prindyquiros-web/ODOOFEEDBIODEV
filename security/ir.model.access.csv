@@ -3,5 +3,14 @@ access_x_contrato,x_contrato,model_x_contrato,base.group_user,1,1,1,1
 access_x_contrato_user,x.contrato user,model_x_contrato,base.group_user,1,1,1,1
 access_x_campana_user,x.campana user,model_x_campana,base.group_user,1,1,1,1
 access_x_proveedor_user,x.proveedor.contrato user,model_x_proveedor_contrato,base.group_user,1,1,1,1
-
+access_x_orden_pedido,x_orden_pedido,model_x_orden_pedido,base.group_user,1,1,1,1
+access_x_orden_pedido_linea,x.orden_pedido.linea,model_x_orden_pedido_linea,base.group_user,1,0,0,0
+access_x_lote_user,x_lote user,model_x_lote,base.group_user,1,0,0,0
+access_x_recepcion_documento_user,x.recepcion.documento_user,model_x_recepcion_documento,base.group_user,1,0,0,0
+access_x_recepcion_documento_manager,x.recepcion.documento_manager,model_x_recepcion_documento,base.group_system,1,1,1,1
+access_x_recepcion_user,access_x_recepcion_user,model_x_recepcion,base.group_user,1,1,1,1
+access_x_recepcion_manager,access_x_recepcion_manager,model_x_recepcion,base.group_system,1,1,1,1
+access_contrato_adenda_user,access.contrato.adenda.user,model_x_contrato_adenda,base.group_user,1,1,1,1
+access_x_almacen_user,x.almacen user,model_x_almacen,base.group_user,1,1,1,0
+access_x_almacen_manager,x.almacen manager,model_x_almacen,base.group_system,1,1,1,1
 

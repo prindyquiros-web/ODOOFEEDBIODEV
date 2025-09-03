@@ -1,0 +1,16 @@
+<odoo>
+  <data noupdate="1">
+    <!-- Regla: acceso a la compañía y sus hijas -->
+    <record id="rule_company_childs" model="ir.rule">
+      <field name="name">Acceso a compañía y sus hijas</field>
+      <field name="model_id" ref="base.model_res_company"/>
+      <!-- Aplica a todos los usuarios internos -->
+      <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+      <field name="domain_force">[
+        '|',
+        ('id', 'in', [user.company_id.id]),
+        ('id', 'child_of', [user.company_id.id])
+      ]</field>
+    </record>
+  </data>
+</odoo>
